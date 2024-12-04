@@ -1,4 +1,4 @@
-Year	Month	TAM	RR	ID
+﻿Year	Month	TAM	RR	ID
 1900	1	-12.60	10.8	10Ill_F_N_B
 1900	2	-20.40	33.1	10Ill_F_N_B
 1900	3	-7.60	64.0	10Ill_F_N_B

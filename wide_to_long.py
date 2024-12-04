@@ -7,8 +7,8 @@ home_folder = 'c:\\Users\\peterhor\\Documents\\GitHub\\Treeline_100year_study\\'
 wide_df = pd.read_excel(home_folder + '/Treeline_V3.xlsx', sheet_name='Data_values_TOP_REP_only')
 
 # Define reference columns and REG groups columns
-reference_columns = ['Nr', 'ID', 'Forest_Tree', 'Species', 'Topmost', 'Rep_New', 'Mun_name', 
-                     'Mun_ID', 'County', 'Mount_alt', 'REG1_Aspect']
+reference_columns = ['Nr', 'ID', 'Forest_Tree', 'Mun_name', 
+                     'County', 'Mount_alt', 'REG1_Aspect']
 reg_columns_groups = [
     ['REG1_name', 'REG1_loc_name', 'REG1_alt', 'REG1_year'],
     ['REG2_name', 'REG2_loc_name', 'REG2_alt', 'REG2_year'],
@@ -43,8 +43,7 @@ for reg_group in reg_columns_groups[:2]:
 additional_columns = [
     'REG3_alt_bar', 'REG3_alt_map', 'Veg_type', 'Veg_symb', 
     'Tree_height', 'Condition', 'Age', 'Photo', 'REG3_year', 'GPS_zone',
-    'Easting', 'Northing', 'GPS_uncertainty', 'Lat', 'Long', 'Comment',
-    'Field_ID', 'Time_R1_R3', 'Dist_SDF'
+    'Easting', 'Northing', 'GPS_uncertainty', 'Lat', 'Long', 'Dist_SDF'
 ]
 
 # Create a new dataframe for REG3 group with all additional columns included

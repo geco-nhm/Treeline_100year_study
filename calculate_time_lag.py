@@ -100,5 +100,7 @@ final_matched_data_df = final_matched_data_df[columns_order]
 # Save the updated matched data to a new CSV file
 final_matched_data_df.to_csv(home_folder + 'final_matched_climate_data.csv', index=False)
 
-
+# Save and display an overview of unmatched entries
+unmatched_ids_df = pd.DataFrame(unmatched_ids, columns=['unmatched_IDs'])
+unmatched_ids_df.to_csv(home_folder + 'unmatched_ids_overview.csv', index=False)
 # %%

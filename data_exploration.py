@@ -13,7 +13,7 @@ home_folder = 'c:\\Users\\peterhor\\Documents\\GitHub\\Treeline_100year_study\\'
 # Load the treeline data - from file wide_to_long.py
 import wide_to_long 
 tfl = pd.read_csv(home_folder + 'Treeline_long_V3.csv')
-
+climate_data = pd.read_csv(home_folder + 'climate_data.csv', encoding='latin1')
 #%%
 # Perform partial matching between 'ID' and 'site_name'
 tfl['matched_site_name'] = tfl['ID'].apply(lambda x: difflib.get_close_matches(x, climate_data['site_name'], n=1, cutoff=0.8))

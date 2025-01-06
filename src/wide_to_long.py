@@ -4,7 +4,7 @@ import pandas as pd
 # Load the data from the uploaded file
 # Define the home folder path
 home_folder = 'c:\\Users\\peterhor\\Documents\\GitHub\\Treeline_100year_study\\'
-wide_df = pd.read_excel(home_folder + '/Treeline_V3.xlsx', sheet_name='Data_values_TOP_REP_only')
+wide_df = pd.read_excel(home_folder +'input\\' + 'Dataset_V6.xlsx', sheet_name='Data_values_TOP_REP_only')
 
 # Define reference columns and REG groups columns
 reference_columns = ['Nr', 'ID', 'Forest_Tree', 'Mun_name', 
@@ -45,7 +45,7 @@ additional_columns = [
     'Tree_height', 'Condition', 'Age', 'Photo', 'REG3_year', 'GPS_zone',
     'Easting', 'Northing', 'GPS_uncertainty', 'Lat', 'Long', 'Dist_SDF'
 ]
-
+#%%
 # Create a new dataframe for REG3 group with all additional columns included
 reg3_df_extended = wide_df[reference_columns + reg_columns_groups[2] + additional_columns].copy()
 
@@ -66,5 +66,5 @@ reg3_df_extended = reg3_df_extended.loc[:, ~reg3_df_extended.columns.duplicated(
 # Concatenate the REG1, REG2, and extended REG3 dataframes
 final_long_format_df = pd.concat(long_format_list + [reg3_df_extended], ignore_index=True)
 #%%
-final_long_format_df.to_csv(home_folder + 'Treeline_long_V3.csv', index=False)
+final_long_format_df.to_csv(home_folder + 'output\\'+ 'Treeline_long_V5.csv', index=False)
 # %%

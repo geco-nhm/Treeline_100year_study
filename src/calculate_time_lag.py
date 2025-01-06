@@ -6,8 +6,8 @@ import difflib
 home_folder = 'c:\\Users\\peterhor\\Documents\\GitHub\\Treeline_100year_study\\'
 
 # Load the data from the CSV files
-treeline_df = pd.read_csv(home_folder + 'Treeline_long_V3.csv')
-climate_df = pd.read_csv(home_folder + 'climate_data.csv')
+treeline_df = pd.read_csv(home_folder + 'output\\Treeline_long_V6.csv')
+climate_df = pd.read_csv(home_folder + 'output\\climate_data.csv')
 
 # Extract the columns we are interested in
 columns_of_interest = ['site_name', 'year', 'MAT', 'HMT', 'LMT', 'ATD', 'WQ', 'CQ', 'M-JJAS', 'JJAS-TD',
@@ -31,6 +31,9 @@ matched_data = []
 # Initialize a list to collect unmatched IDs
 unmatched_ids = []
 
+# Initialize a list to collect match status
+match_status = []
+#%%
 # Iterate over each row in treeline_df
 for _, row in treeline_df.iterrows():
     current_id = row['ID']
@@ -48,13 +51,16 @@ for _, row in treeline_df.iterrows():
             average_values['year'] = reg_year
             average_values['ID'] = current_id  # Add the ID column
             matched_data.append(average_values)
+            match_status.append({'ID': current_id, 'REG_year': reg_year, 'Matched': True})
         else:
             # If no data for the previous 20 years, append the matched rows as is
             matched_rows['ID'] = current_id  # Add the ID column
             matched_data.append(matched_rows)
+            match_status.append({'ID': current_id, 'REG_year': reg_year, 'Matched': True})
     else:
         # If no match is found, add the current ID to unmatched_ids
         unmatched_ids.append(current_id)
+        match_status.append({'ID': current_id, 'REG_year': reg_year, 'Matched': False})
 
 # Concatenate all matched rows into a DataFrame
 matched_data_df = pd.DataFrame(matched_data) if matched_data else pd.DataFrame(columns=columns_of_interest + ['ID'])
@@ -62,6 +68,7 @@ matched_data_df = pd.DataFrame(matched_data) if matched_data else pd.DataFrame(c
 # Attempt to find approximate matches for unmatched IDs
 newly_matched_data = []
 
+#%% PARTIAL MATCH 
 # Iterate over unmatched IDs and attempt to find approximate matches
 for unmatched_id in unmatched_ids:
     # Try to find a close match in the site names from the climate dataset
@@ -85,22 +92,24 @@ for unmatched_id in unmatched_ids:
                 # If no data for the previous 20 years, append the matched rows as is
                 matched_rows['ID'] = unmatched_id  # Add the ID column
                 newly_matched_data.append(matched_rows)
-
 # Concatenate newly matched rows into a DataFrame
 newly_matched_data_df = pd.DataFrame(newly_matched_data) if newly_matched_data else pd.DataFrame(columns=columns_of_interest + ['ID'])
 
 # Combine the original matched data with the newly matched data
 final_matched_data_df = pd.concat([matched_data_df, newly_matched_data_df], ignore_index=True)
-
 # Reorder columns to have 'site_name' as the first column
 columns_order = ['site_name', 'ID', 'year'] + [col for col in columns_of_interest if col not in ['site_name', 'year']]
 final_matched_data_df = final_matched_data_df[columns_order]
+#%%
+# Reorder columns to have 'site_name' as the first column
+columns_order = ['site_name', 'ID', 'year'] + [col for col in columns_of_interest if col not in ['site_name', 'year']]
+matched_data_df = matched_data_df[columns_order]
 
 
 # Save the updated matched data to a new CSV file
-final_matched_data_df.to_csv(home_folder + 'final_matched_climate_data.csv', index=False)
+matched_data_df.to_csv(home_folder + 'matched_climate_data.csv', index=False)
 
 # Save and display an overview of unmatched entries
 unmatched_ids_df = pd.DataFrame(unmatched_ids, columns=['unmatched_IDs'])
-unmatched_ids_df.to_csv(home_folder + 'unmatched_ids_overview.csv', index=False)
+unmatched_ids_df.to_csv(home_folder + 'unmatched_climate_data.csv', index=False)
 # %%

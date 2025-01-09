@@ -68,38 +68,6 @@ matched_data_df = pd.DataFrame(matched_data) if matched_data else pd.DataFrame(c
 # Attempt to find approximate matches for unmatched IDs
 newly_matched_data = []
 
-#%% PARTIAL MATCH 
-# Iterate over unmatched IDs and attempt to find approximate matches
-for unmatched_id in unmatched_ids:
-    # Try to find a close match in the site names from the climate dataset
-    close_match = find_close_match(unmatched_id, unique_site_names)
-    
-    if close_match:
-        # Find records in climate_df with the close match and respective year
-        reg_year = treeline_df[treeline_df['ID'] == unmatched_id]['REG_year'].values[0]
-        matched_rows = climate_df[(climate_df['site_name'] == close_match) & (climate_df['year'] == reg_year)]
-        
-        if not matched_rows.empty:
-            # Extract the 20 years prior to the matched year and calculate the average for each column
-            previous_20_years = climate_df[(climate_df['site_name'] == close_match) & (climate_df['year'] < reg_year) & (climate_df['year'] >= reg_year - 20)]
-            if not previous_20_years.empty:
-                average_values = previous_20_years.mean(numeric_only=True)
-                average_values['site_name'] = close_match
-                average_values['year'] = reg_year
-                average_values['ID'] = unmatched_id  # Add the ID column
-                newly_matched_data.append(average_values)
-            else:
-                # If no data for the previous 20 years, append the matched rows as is
-                matched_rows['ID'] = unmatched_id  # Add the ID column
-                newly_matched_data.append(matched_rows)
-# Concatenate newly matched rows into a DataFrame
-newly_matched_data_df = pd.DataFrame(newly_matched_data) if newly_matched_data else pd.DataFrame(columns=columns_of_interest + ['ID'])
-
-# Combine the original matched data with the newly matched data
-final_matched_data_df = pd.concat([matched_data_df, newly_matched_data_df], ignore_index=True)
-# Reorder columns to have 'site_name' as the first column
-columns_order = ['site_name', 'ID', 'year'] + [col for col in columns_of_interest if col not in ['site_name', 'year']]
-final_matched_data_df = final_matched_data_df[columns_order]
 #%%
 # Reorder columns to have 'site_name' as the first column
 columns_order = ['site_name', 'ID', 'year'] + [col for col in columns_of_interest if col not in ['site_name', 'year']]

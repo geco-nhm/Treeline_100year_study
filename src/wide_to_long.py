@@ -66,5 +66,5 @@ reg3_df_extended = reg3_df_extended.loc[:, ~reg3_df_extended.columns.duplicated(
 # Concatenate the REG1, REG2, and extended REG3 dataframes
 final_long_format_df = pd.concat(long_format_list + [reg3_df_extended], ignore_index=True)
 #%%
-final_long_format_df.to_csv(home_folder + 'output\\'+ 'Treeline_long_V5.csv', index=False)
+final_long_format_df.to_csv(home_folder + 'output\\'+ 'Treeline_long_V6.csv', index=False)
 # %%

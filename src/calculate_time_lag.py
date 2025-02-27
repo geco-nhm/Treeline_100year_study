@@ -17,11 +17,6 @@ columns_of_interest = ['site_name', 'year', 'MAT', 'HMT', 'LMT', 'ATD', 'WQ', 'C
 # Extract only the relevant columns from the climate data
 climate_df = climate_df[columns_of_interest]
 
-# Define a function to find approximate matches between two strings
-def find_close_match(target, possibilities, threshold=0.8):
-    closest_matches = difflib.get_close_matches(target, possibilities, n=1, cutoff=threshold)
-    return closest_matches[0] if closest_matches else None
-
 # Get a list of all unique 'site_name' values in climate_df for matching
 unique_site_names = climate_df['site_name'].unique()
 

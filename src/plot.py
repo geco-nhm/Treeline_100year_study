@@ -34,7 +34,8 @@ for i, (_, row) in enumerate(site_matched.iterrows()):
     # Draw a horizontal line over the 20-year window at the computed average value
     plt.hlines(y=avg_value, xmin=start_year, xmax=reg_year, 
                colors=colors[i % len(colors)], linestyles='-', linewidth=3,
-               label=f'Period {i+1}: {start_year}-{reg_year}')
+               label=f'Period {i+1}: {int(start_year)}–{int(reg_year)}')
+   
     # Add a larger marker at the registration year
     plt.plot(reg_year, avg_value, marker='o', color=colors[i % len(colors)], markersize=10)
     # Annotate the registration point
@@ -74,7 +75,7 @@ for spine in ax.spines.values():
     spine.set_visible(False)
 
 # Save the plot as a PNG file
-plt.savefig(f'output\\{variable}_{site_name}_300dpi.png', dpi=300, bbox_inches='tight')
+plt.savefig(f'output\\{variable}_{site_name}_new_300dpi.png', dpi=300, bbox_inches='tight')
 
 # Show the plot on the canvas
 plt.show()

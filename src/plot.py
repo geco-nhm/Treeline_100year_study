@@ -3,8 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the full climate data and the matched climate data
-climate_df = pd.read_csv('output\\climate_data.csv')
-matched_df = pd.read_csv('output\\matched_climate_data.csv')
+climate_df = pd.read_csv('../output/climate_data.csv')
+matched_df = pd.read_csv('../output/matched_climate_data.csv')
 
 # Specify the site and variable of interest
 site_name = '14Hei_F_NW_H'   # site name 
@@ -15,7 +15,7 @@ site_climate = climate_df[climate_df['site_name'] == site_name]
 site_matched = matched_df[matched_df['site_name'] == site_name]
 
 # Create the canvas for plotting
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(16, 8))
 
 # Plot the full time series for the chosen variable from climate data
 plt.plot(site_climate['year'], site_climate[variable], 
@@ -75,7 +75,9 @@ for spine in ax.spines.values():
     spine.set_visible(False)
 
 # Save the plot as a PNG file
-plt.savefig(f'output\\{variable}_{site_name}_new_300dpi.png', dpi=300, bbox_inches='tight')
+print("site_climate empty?", site_climate.empty)
+print("site_matched empty?", site_matched.empty)
+plt.savefig(f'../output/{variable}_{site_name}_new_300dpi.png', dpi=300, bbox_inches='tight')
 
 # Show the plot on the canvas
 plt.show()

@@ -8,7 +8,7 @@ matched_df = pd.read_csv('../output/matched_climate_data.csv')
 
 # Specify the site and variables of interest
 site_name = '14Hei_F_NW_H'   # site name
-variables = ['MAT', 'WQ', 'M-JJAS']  # variables of interest
+variables = ['MAT']  # variables of interest
 
 # Filter data for the chosen site
 site_climate = climate_df[climate_df['site_name'] == site_name]
@@ -94,7 +94,7 @@ for variable in variables:
     plt.xlabel('Year')
     plt.ylabel(variable)
     plt.title(
-        f'{variable} Over Time for {site_name}\n'
+        f'Mean Annual Temperature Over Time for Forest Line at Heimdalshøe (1197masl)\n'
         f'with 20-Year Averaged Pre-Registration Periods'
     )
     plt.legend()
@@ -102,7 +102,7 @@ for variable in variables:
     plt.tight_layout()
 
     # Save the plot as a PNG file
-    out_path = f'../output/{variable}_{site_name}_new_300dpi.png'
+    out_path = f'../output/{variable}_{site_name}_new_300dpi_hardcoded.png'
     plt.savefig(out_path, dpi=300, bbox_inches='tight')
     print("Saved:", out_path)
 

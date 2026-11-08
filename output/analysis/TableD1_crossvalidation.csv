@@ -1,0 +1,15 @@
+"response","model","prediction_error"
+"TL_change","Null",5932.10752688172
+"TL_change","DistToSummit",5107.90080397663
+"TL_change","MT6.5",5719.28401051887
+"TL_change","MT6.5 + ATD",5254.6274350264
+"TL_advance","Null",4209.11549295775
+"TL_advance","DistToSummit",3632.7423783716
+"TL_advance","MT6.5",4229.14579637584
+"TL_advance","MT6.5 + MT5.5",4040.95093252852
+"FL_change","Null",4334.45161290323
+"FL_change","DistToSummit",4072.6739072474
+"FL_change","Dist_SDF (final)",4159.19024861748
+"FL_advance","Null",2321.95056497175
+"FL_advance","DistToSummit",2277.7199116338
+"FL_advance","Aspect_favour (final)",2212.28015979148

@@ -13,24 +13,14 @@
 #******************************************************************************
 #******************************************************************************
 
-# Load necessary libraries
-install.load.package <- function(x) { # custom function that loads the desired package and automatically installs any non-installed packages
-  if (!require(x, character.only = TRUE))
-    install.packages(x, repos='http://cran.us.r-project.org')
-  require(x, character.only = TRUE)
-}
-package_vec <- c( # vector of package names
-  "data.table", # vector tools
-  "ggplot2", # raster tools
-  "dplyr",  # spatial data tools (geospatial data abstraction library)
-  "ggpubr", # color ramps (e.g. tim.colors)
-  "tidyr", # for shapefile retrieval
-  "car",
-  "ecospat",
-  "corrplot"
-)
-
-sapply(package_vec, install.load.package) # applying install/load function to each name in package vector
+# Load necessary libraries (install them beforehand; see README)
+library(data.table)
+library(ggplot2)
+library(dplyr)
+library(ggpubr)
+library(tidyr)
+library(car)
+library(corrplot)
 
 #******************************************************************************
 # PACKAGES end ###
@@ -44,9 +34,9 @@ sapply(package_vec, install.load.package) # applying install/load function to ea
 #******************************************************************************
 
 # Read in dataprep dataset for correlation
-TL_data <- read.csv(file ="input/TL_df_NoSummitSyndrome.csv", sep = ",", dec = ".", na.strings = c("NA", "", "NULL"))
+TL_data <- read.csv(file ="output/analysis/TL_df_NoSummitSyndrome.csv", sep = ",", dec = ".", na.strings = c("NA", "", "NULL"))
 
-FL_data <- read.csv(file ="input/FL_df_NoSummitSyndrome.csv", sep = ",", dec = ".", na.strings = c("NA", "", "NULL"))
+FL_data <- read.csv(file ="output/analysis/FL_df_NoSummitSyndrome.csv", sep = ",", dec = ".", na.strings = c("NA", "", "NULL"))
 
 
 TL_data$Forest_Tree <- as.character(TL_data$Forest_Tree)
@@ -143,7 +133,7 @@ Stat_Dec_FL_df <- FL_data[FL_data$REG_alt <= 20,] # 45 obs.
 
 # Selecting EVs for modeling df
 colnames(TL_data)
-TL_modeling <- (TL_data[, c(2, 20, 53:54, 58:59, 73:76, 81)])
+TL_modeling <- (TL_data[, c("Nr", "Dist_SDF", "years", "REG_alt", "ATD", "WQ", "MT5.5", "MT6", "MT6.5", "MT7", "DistToSummit")])
 
 
 # Preselected EVs FLs:
@@ -152,7 +142,7 @@ TL_modeling <- (TL_data[, c(2, 20, 53:54, 58:59, 73:76, 81)])
 #3. MT10
 
 colnames(FL_data)
-FL_modeling <- (FL_data[, c(2, 20, 54, 78, 81)])
+FL_modeling <- (FL_data[, c("Nr", "Dist_SDF", "REG_alt", "MT10", "DistToSummit")])
 
 # na.omit
 TL_modeling_df <- na.omit(TL_modeling)
@@ -208,7 +198,7 @@ corrplot.mixed(
 
 # Selecting EVs for modeling df
 colnames(Ascending_TL_df)
-TL_Ascending_modeling <- (Ascending_TL_df[, c(20, 53:55, 59, 68, 73, 75:76, 79, 81)])
+TL_Ascending_modeling <- (Ascending_TL_df[, c("Dist_SDF", "years", "REG_alt", "MAT", "WQ", "PSDQ", "MT5.5", "MT6.5", "MT7", "log_mean_graz_20yr_prMun", "DistToSummit")])
 
 # na.omit
 TL_Ascending_modeling_df <- na.omit(TL_Ascending_modeling)
@@ -230,7 +220,7 @@ corrplot.mixed(
 
 # Corr-plot FLs
 corrplot.mixed(
-  cor(Ascending_TL_df[, c(20, 53:55, 59, 68, 73, 75:76, 79, 81)],
+  cor(Ascending_TL_df[, c("Dist_SDF", "years", "REG_alt", "MAT", "WQ", "PSDQ", "MT5.5", "MT6.5", "MT7", "log_mean_graz_20yr_prMun", "DistToSummit")],
       method = "kendall",
       use = "complete.obs"),
   main = "TL_Ascending EVs",
@@ -253,7 +243,7 @@ corrplot.mixed(
 
 # Selecting EVs for modeling df
 colnames(Ascending_FL_df)
-FL_Ascending_modeling <- (Ascending_FL_df[, c(53:54, 78, 80)])
+FL_Ascending_modeling <- (Ascending_FL_df[, c("years", "REG_alt", "MT10", "Aspect_favour", "DistToSummit")])
 
 # na.omit
 FL_Ascending_modeling_df <- na.omit(FL_Ascending_modeling)
@@ -275,7 +265,7 @@ corrplot.mixed(
 
 # Corr-plot FLs
 corrplot.mixed(
-  cor(Ascending_FL_df[, c(20, 53:55, 59, 68, 73, 75:76, 79, 81)],
+  cor(Ascending_FL_df[, c("Dist_SDF", "years", "REG_alt", "MAT", "WQ", "PSDQ", "MT5.5", "MT6.5", "MT7", "log_mean_graz_20yr_prMun", "DistToSummit")],
       method = "kendall",
       use = "complete.obs"),
   main = "FL_Ascending EVs",
@@ -589,7 +579,8 @@ summary(model_AFLs_1a)                                # p = 0.0242 *
 ##### TLs #####-------------------------------------------------------
 
 # Create the 4-Fold-vector/four subsets:
-(xv <- as.factor(rep(1:4, 31)))
+cv_results <- list()  # collected for Table D1
+(xv <- as.factor(rep(1:4, length.out = nrow(TL_modeling_df))))
 # brackets implies that the result is printed on the screen
 
 set.seed(1)
@@ -637,7 +628,8 @@ PE_NULL_4
 
 
 #Calculate total prediction error:
-PE_NULL_Sum <- sum(abs(PE_NULL_1) + abs(PE_NULL_2) + abs(PE_NULL_3) + abs(PE_NULL_4))
+PE_NULL_Sum <- sum(abs(c(PE_NULL_1, PE_NULL_2, PE_NULL_3, PE_NULL_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "Null", prediction_error = PE_NULL_Sum)
 PE_NULL_Sum  # 5932.108
 
 
@@ -686,7 +678,8 @@ PE_4
 
 
 #Calculate total prediction error:
-PE_Sum <- sum(abs(PE_1) + abs(PE_2) + abs(PE_3) + abs(PE_4))
+PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "DistToSummit", prediction_error = PE_Sum)
 PE_Sum  #  5107.901
 
 
@@ -735,7 +728,8 @@ PE_4
 
 
 #Calculate total prediction error:
-PE_Sum <- sum(abs(PE_1) + abs(PE_2) + abs(PE_3) + abs(PE_4))
+PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "MT6.5", prediction_error = PE_Sum)
 PE_Sum  #  5701.148
 
 
@@ -788,7 +782,8 @@ PE_4
 
 
 #Calculate total prediction error:
-PE_Sum <- sum(abs(PE_1) + abs(PE_2) + abs(PE_3) + abs(PE_4))
+PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "MT6.5 + ATD", prediction_error = PE_Sum)
 PE_Sum  # 4917.583
 
 
@@ -796,7 +791,7 @@ PE_Sum  # 4917.583
 ##### Ascending TLs #####-------------------------------------------------------
 
 # Create the 4-Fold-vector/four subsets:
-(xv1 <- as.factor(rep(1:4, 23)))
+(xv1 <- as.factor(rep(1:4, length.out = nrow(TL_Ascending_modeling_df))))
 # brackets implies that the result is printed on the screen
 
 set.seed(1)
@@ -844,7 +839,8 @@ PE_NULL_4
 
 
 #Calculate total prediction error:
-PE_NULL_Sum <- sum(abs(PE_NULL_1) + abs(PE_NULL_2) + abs(PE_NULL_3) + abs(PE_NULL_4))
+PE_NULL_Sum <- sum(abs(c(PE_NULL_1, PE_NULL_2, PE_NULL_3, PE_NULL_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "Null", prediction_error = PE_NULL_Sum)
 PE_NULL_Sum  # 4278.539
 
 
@@ -893,7 +889,8 @@ PE_4
 
 
 #Calculate total prediction error:
-PE_Sum <- sum(abs(PE_1) + abs(PE_2) + abs(PE_3) + abs(PE_4))
+PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "DistToSummit", prediction_error = PE_Sum)
 PE_Sum  #  3613.888
 
 
@@ -942,7 +939,8 @@ PE_4
 
 
 #Calculate total prediction error:
-PE_Sum <- sum(abs(PE_1) + abs(PE_2) + abs(PE_3) + abs(PE_4))
+PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "MT6.5", prediction_error = PE_Sum)
 PE_Sum  #  4044.945
 
 
@@ -995,14 +993,15 @@ PE_4
 
 
 #Calculate total prediction error:
-PE_Sum <- sum(abs(PE_1) + abs(PE_2) + abs(PE_3) + abs(PE_4))
+PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "MT6.5 + MT5.5", prediction_error = PE_Sum)
 PE_Sum  # 3532.437
 
 
 ##### FLs #####-------------------------------------------------------
 
 # Create the 4-Fold-vector/four subsets:
-xv2 <- as.factor(rep(1:4, 30))
+xv2 <- as.factor(rep(1:4, length.out = nrow(FL_modeling_df)))
 
 set.seed(1)
 (xv2 <- sample(x = xv2, size = length(xv2), replace = FALSE))
@@ -1050,7 +1049,8 @@ PE_NULL_4
 
 
 #Calculate total prediction error:
-PE_NULL_Sum <- sum(abs(PE_NULL_1) + abs(PE_NULL_2) + abs(PE_NULL_3) + abs(PE_NULL_4))
+PE_NULL_Sum <- sum(abs(c(PE_NULL_1, PE_NULL_2, PE_NULL_3, PE_NULL_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_change", model = "Null", prediction_error = PE_NULL_Sum)
 PE_NULL_Sum  # 4307.954
 
 
@@ -1099,7 +1099,8 @@ PE_4
 
 
 #Calculate total prediction error:
-PE_Sum <- sum(abs(PE_1) + abs(PE_2) + abs(PE_3) + abs(PE_4))
+PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_change", model = "DistToSummit", prediction_error = PE_Sum)
 PE_Sum  #  4076.674
 
 
@@ -1148,14 +1149,15 @@ PE_4
 
 
 #Calculate total prediction error:
-PE_Sum <- sum(abs(PE_1) + abs(PE_2) + abs(PE_3) + abs(PE_4))
+PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_change", model = "Dist_SDF (final)", prediction_error = PE_Sum)
 PE_Sum  # 4158.87
 
 
 ##### Ascending FLs #####-----------------------------------------------------
 
 # Create the 4-Fold-vector/four subsets:
-xv2 <- as.factor(rep(1:4, 16))
+xv2 <- as.factor(rep(1:4, length.out = nrow(FL_Ascending_modeling_df)))
 
 set.seed(1)
 (xv2 <- sample(x = xv2, size = length(xv2), replace = FALSE))
@@ -1203,7 +1205,8 @@ PE_NULL_4
 
 
 #Calculate total prediction error:
-PE_NULL_Sum <- sum(abs(PE_NULL_1) + abs(PE_NULL_2) + abs(PE_NULL_3) + abs(PE_NULL_4))
+PE_NULL_Sum <- sum(abs(c(PE_NULL_1, PE_NULL_2, PE_NULL_3, PE_NULL_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_advance", model = "Null", prediction_error = PE_NULL_Sum)
 PE_NULL_Sum  # 2363.531
 
 
@@ -1252,7 +1255,8 @@ PE_4
 
 
 #Calculate total prediction error:
-PE_Sum <- sum(abs(PE_1) + abs(PE_2) + abs(PE_3) + abs(PE_4))
+PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_advance", model = "DistToSummit", prediction_error = PE_Sum)
 PE_Sum  #  4076.674
 
 
@@ -1301,7 +1305,8 @@ PE_4
 
 
 #Calculate total prediction error:
-PE_Sum <- sum(abs(PE_1) + abs(PE_2) + abs(PE_3) + abs(PE_4))
+PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_advance", model = "Aspect_favour (final)", prediction_error = PE_Sum)
 PE_Sum  # 2264.917
 
 
@@ -1311,3 +1316,80 @@ PE_Sum  # 2264.917
 #******************************************************************************
 
 #******************************************************************************
+
+#******************************************************************************
+#******************************************************************************
+# RESULT TABLES ####
+#******************************************************************************
+#******************************************************************************
+# Table 2: Kendall's tau and p-values between each predictor and the four
+# response variables. Advance = records with REG_alt > 20 m (same subsets as
+# the models above). Written to output/analysis/Table2_kendall.csv.
+
+table2_predictors <- c(
+  "Annual precipitation anomaly"       = "APD",
+  "Annual precipitation sum"           = "APS",
+  "Annual temperature anomaly"         = "ATD",
+  "Aspect favourability"               = "Aspect_favour",
+  "Coldest quarter"                    = "CQ",
+  "Mean annual temperature"            = "MAT",
+  "Mean grazing pressure"              = "log_mean_graz_20yr_prMun",
+  "Monthly highest temperature"        = "HMT",
+  "Monthly lowest temperature"         = "LMT",
+  "Monthly temperature > 0 °C"         = "MT0",
+  "Monthly temperature > 5 °C"         = "MT5",
+  "Monthly temperature > 5.5 °C"       = "MT5.5",
+  "Monthly temperature > 6 °C"         = "MT6",
+  "Monthly temperature > 6.5 °C"       = "MT6.5",
+  "Monthly temperature > 7 °C"         = "MT7",
+  "Monthly temperature > 7.5 °C"       = "MT7.5",
+  "Tetratherm mean temperature"        = "M.JJAS",
+  "Tetratherm precipitation anomaly"   = "JJAS.PD",
+  "Tetratherm precipitation sum"       = "PS.JJAS",
+  "Tetratherm temperature anomaly"     = "JJAS.TD",
+  "Proximity to mountain summer farms" = "Dist_SDF",
+  "Warmest quarter"                    = "WQ"
+)
+
+table2_responses <- list(
+  TL_change  = TL_data,
+  TL_advance = Ascending_TL_df,
+  FL_change  = FL_data,
+  FL_advance = Ascending_FL_df
+)
+
+kendall_row <- function(df, var) {
+  ct <- suppressWarnings(cor.test(df[[var]], df$REG_alt, method = "kendall"))
+  c(tau = unname(ct$estimate), p = ct$p.value, n = sum(complete.cases(df[[var]], df$REG_alt)))
+}
+
+Table2 <- data.frame(Predictor = names(table2_predictors), Variable = unname(table2_predictors))
+for (r in names(table2_responses)) {
+  res <- t(sapply(table2_predictors, function(v) kendall_row(table2_responses[[r]], v)))
+  Table2[[paste0(r, "_tau")]] <- round(res[, "tau"], 4)
+  Table2[[paste0(r, "_p")]]   <- round(res[, "p"], 4)
+  Table2[[paste0(r, "_n")]]   <- res[, "n"]
+}
+write.csv(Table2, "output/analysis/Table2_kendall.csv", row.names = FALSE, fileEncoding = "UTF-8")
+
+
+# Final models (Fig. 5) with sample sizes
+final_models <- list(
+  TL_change  = lm(REG_alt ~ MT6.5, data = TL_modeling_df),
+  TL_advance = lm(REG_alt ~ MT6.5, data = TL_Ascending_modeling_df),
+  FL_change  = lm(REG_alt ~ Dist_SDF, data = FL_modeling_df),
+  FL_advance = lm(REG_alt ~ Aspect_favour, data = FL_Ascending_modeling_df)
+)
+final_model_table <- do.call(rbind, lapply(names(final_models), function(m) {
+  s <- summary(final_models[[m]])
+  data.frame(model = m, predictor = rownames(s$coefficients)[2], n = nobs(final_models[[m]]),
+             b = s$coefficients[2, 1], SE = s$coefficients[2, 2], p = s$coefficients[2, 4],
+             R2 = s$r.squared)
+}))
+write.csv(final_model_table, "output/analysis/final_models.csv", row.names = FALSE)
+
+# Table D1: summed absolute 4-fold cross-validation prediction errors
+TableD1 <- do.call(rbind, cv_results)
+write.csv(TableD1, "output/analysis/TableD1_crossvalidation.csv", row.names = FALSE)
+print(TableD1)
+print(final_model_table)

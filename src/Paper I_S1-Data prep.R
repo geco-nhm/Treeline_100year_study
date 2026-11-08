@@ -34,7 +34,7 @@ library(car)
 # Read in full dataset
 TFL_df_prep <-
   read.csv(
-    file = "input/paper_I_full_data_long_correlation.csv",
+    file = "output/analysis/paper_I_full_data_long_correlation.csv",
     sep = ",",
     dec = ".",
     na.strings = c("NA", "", "NULL")
@@ -705,7 +705,7 @@ data_frame[data_frame$DistToSummit < 50,]
 TFL_df_corr <- data_frame
 
 #Save csv file to disk
-write.csv(TFL_df_corr, "input/TFL_df_corr.csv")
+write.csv(TFL_df_corr, "output/analysis/TFL_df_corr.csv")
 
 #******************************************************************************
 # DATA PREP. end ###

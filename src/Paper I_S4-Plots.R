@@ -14,27 +14,14 @@
 #******************************************************************************
 
 # Load necessary libraries
-install.load.package <- function(x) { # custom function that loads the desired package and automatically installs any non-installed packages
-  if (!require(x, character.only = TRUE))
-    install.packages(x, repos='http://cran.us.r-project.org')
-  require(x, character.only = TRUE)
-}
-package_vec <- c( # vector of package names
-  "data.table", # vector tools
-  "ggplot2", # raster tools
-  "dplyr",  # spatial data tools (geospatial data abstraction library)
-  "ggpubr", # color ramps (e.g. tim.colors)
-  "tidyr", # for shapefile retrieval
-  "car",
-  "ecospat",
-  "corrplot",
-  "see", # for model evaluation
-  "performance", # for model evaluation
-  "sjPlot", # for model evaluation
-  "merTools" # plot
-)
-
-sapply(package_vec, install.load.package) # applying install/load function to each name in package vector
+# Load libraries (install them beforehand; see README)
+library(data.table)
+library(ggplot2)
+library(dplyr)
+library(ggpubr)
+library(tidyr)
+library(car)
+library(corrplot)
 
 #******************************************************************************
 # PACKAGES end ###
@@ -48,13 +35,13 @@ sapply(package_vec, install.load.package) # applying install/load function to ea
 #******************************************************************************
 
 # Read in full dataset
-TFL_df_plot <- read.csv(file ="input/TFL_df_plot.csv", sep = ",", dec = ".", na.strings = c("NA", "", "NULL"))
+TFL_df_plot <- read.csv(file ="output/analysis/TFL_df_plot.csv", sep = ",", dec = ".", na.strings = c("NA", "", "NULL"))
 
 
 # Read in dataprep dataset for correlation
-TL_data <- read.csv(file ="input/TL_df_NoSummitSyndrome.csv", sep = ",", dec = ".", na.strings = c("NA", "", "NULL"))
+TL_data <- read.csv(file ="output/analysis/TL_df_NoSummitSyndrome.csv", sep = ",", dec = ".", na.strings = c("NA", "", "NULL"))
 
-FL_data <- read.csv(file ="input/FL_df_NoSummitSyndrome.csv", sep = ",", dec = ".", na.strings = c("NA", "", "NULL"))
+FL_data <- read.csv(file ="output/analysis/FL_df_NoSummitSyndrome.csv", sep = ",", dec = ".", na.strings = c("NA", "", "NULL"))
 
 
 # Redefine variables
@@ -117,6 +104,9 @@ Static_TL_df <-
   TL_data[TL_data$REG_alt >= -20 & TL_data$REG_alt <= 23,] # 25 obs.
 Descending_TL_df <- TL_data[TL_data$REG_alt < -20,] # 5 obs.
 
+## Ascending FLs #--------------------------------------------------------------
+Ascending_FL_df <- FL_data[FL_data$REG_alt > 20,]
+
 #******************************************************************************
 # SUBSETS end ###
 #******************************************************************************
@@ -140,7 +130,7 @@ Descending_TL_df <- TL_data[TL_data$REG_alt < -20,] # 5 obs.
 
 # Selecting EVs for modeling df
 colnames(TL_data)
-TL_modeling <- (TL_data[, c(2, 20, 23, 53:54, 58:59, 73:76, 81)])
+TL_modeling <- (TL_data[, c("Nr", "Dist_SDF", "REG_name", "years", "REG_alt", "ATD", "WQ", "MT5.5", "MT6", "MT6.5", "MT7", "DistToSummit")])
 
 
 # Preselected EVs FLs:
@@ -149,7 +139,7 @@ TL_modeling <- (TL_data[, c(2, 20, 23, 53:54, 58:59, 73:76, 81)])
 #3. MT10
 
 colnames(FL_data)
-FL_modeling <- (FL_data[, c(2, 20, 23, 54, 78, 81)])
+FL_modeling <- (FL_data[, c("Nr", "Dist_SDF", "REG_name", "REG_alt", "MT10", "DistToSummit")])
 
 # na.omit
 TL_modeling_df <- na.omit(TL_modeling)
@@ -158,7 +148,7 @@ FL_modeling_df <- na.omit(FL_modeling)
 
 # Corr-plot TLs
 corrplot.mixed(
-  cor(TL_modeling_df[, ],
+  cor(TL_modeling_df[, sapply(TL_modeling_df, is.numeric)],
       method = "kendall",
       use = "complete.obs"),
   main = "TL EVs",
@@ -174,7 +164,7 @@ corrplot.mixed(
 
 # Corr-plot FLs
 corrplot.mixed(
-  cor(FL_modeling_df[, ],
+  cor(FL_modeling_df[, sapply(FL_modeling_df, is.numeric)],
       method = "kendall",
       use = "complete.obs"),
   main = "FL EVs",
@@ -205,7 +195,7 @@ corrplot.mixed(
 
 # Selecting EVs for modeling df
 colnames(Ascending_TL_df)
-TL_Ascending_modeling <- (Ascending_TL_df[, c(20, 23, 53:55, 59, 68, 73, 75:76, 79, 81)])
+TL_Ascending_modeling <- (Ascending_TL_df[, c("Dist_SDF", "REG_name", "years", "REG_alt", "MAT", "WQ", "PSDQ", "MT5.5", "MT6.5", "MT7", "log_mean_graz_20yr_prMun", "DistToSummit")])
 
 # na.omit
 TL_Ascending_modeling_df <- na.omit(TL_Ascending_modeling)
@@ -220,7 +210,7 @@ TL_Ascending_modeling_df <- na.omit(TL_Ascending_modeling)
 
 # Selecting EVs for modeling df
 colnames(Ascending_FL_df)
-FL_Ascending_modeling <- (Ascending_FL_df[, c(23, 53:54, 78, 80)])
+FL_Ascending_modeling <- (Ascending_FL_df[, c("REG_name", "years", "REG_alt", "MT10", "Aspect_favour")])
 
 # na.omit
 FL_Ascending_modeling_df <- na.omit(FL_Ascending_modeling)
@@ -508,7 +498,7 @@ ttest.plot <-
 
 
 # Save the ggplot to a file
-ggsave("Fig3.pdf", 
+ggsave("output/figures/Fig3.pdf", 
        plot = ttest.plot, 
        width = 297, 
        height = 210, 
@@ -532,10 +522,10 @@ r_squared_TLs <- round(model_summary_TLs$r.squared, 2)  # RB2 value
 # QQ plot
 qqnorm(resid(model_TLs))
 qqline(resid(model_TLs))
-plot(check_model(model_TLs))
+if (requireNamespace("performance", quietly = TRUE)) plot(performance::check_model(model_TLs))  # optional diagnostics
 
 # Estimates
-plot_model(model_TLs)
+if (requireNamespace("sjPlot", quietly = TRUE)) sjPlot::plot_model(model_TLs)  # optional diagnostics
 
 
 # Scatterplot final model
@@ -628,10 +618,10 @@ r_squared_FLs <- round(model_summary_FLs$r.squared, 2)  # RB2 value
 # QQ plot
 qqnorm(resid(model_FLs))
 qqline(resid(model_FLs))
-check_model(model_FLs)
+if (requireNamespace("performance", quietly = TRUE)) performance::check_model(model_FLs)  # optional diagnostics
 
 # Estimates
-plot_model(model_FLs)
+if (requireNamespace("sjPlot", quietly = TRUE)) sjPlot::plot_model(model_FLs)  # optional diagnostics
 
 
 # Scatterplot final model
@@ -719,10 +709,10 @@ r_squared_ATLs <- round(model_summary_ATLs$r.squared, 2)  # RB2 value
 # QQ plot
 qqnorm(resid(model_ATLs))
 qqline(resid(model_ATLs))
-check_model(model_ATLs)
+if (requireNamespace("performance", quietly = TRUE)) performance::check_model(model_ATLs)  # optional diagnostics
 
 # Estimates
-plot_model(model_ATLs)
+if (requireNamespace("sjPlot", quietly = TRUE)) sjPlot::plot_model(model_ATLs)  # optional diagnostics
 
 
 # Scatterplot final model
@@ -809,10 +799,10 @@ r_squared_AFLs <- round(model_summary_AFLs$r.squared, 2)  # RB2 value
 # QQ plot
 qqnorm(resid(model_AFLs))
 qqline(resid(model_AFLs))
-check_model(model_AFLs)
+if (requireNamespace("performance", quietly = TRUE)) performance::check_model(model_AFLs)  # optional diagnostics
 
 # Estimates
-plot_model(model_AFLs)
+if (requireNamespace("sjPlot", quietly = TRUE)) sjPlot::plot_model(model_AFLs)  # optional diagnostics
 
 
 # Scatterplot final model
@@ -1082,7 +1072,7 @@ ggarrange(Fig_4a, Fig_4b, Fig_4c, Fig_4d,
 
 # Saving gridded plots
 ggsave(
-  "Fig5abcd_v2.pdf",
+  "output/figures/Fig5abcd.pdf",
   plot = last_plot(),
   width = 210, height = 297,
   units = "mm",
@@ -1090,18 +1080,12 @@ ggsave(
 
 
 # Saving MT6.5 plots
-ggsave("Fig4.pdf", 
+ggsave("output/figures/Fig4.pdf", 
        plot = last_plot(), 
        width = 297, height = 210, 
        units = "mm",
        device = cairo_pdf)
 
-ggsave(
-  "Fig4",
-  plot = last_plot(),
-  width = 14, height = 8,
-  units = "in",
-  device = cairo_pdf)
 
 
 # Appendix plot Distance summer dairy farm
@@ -1113,7 +1097,7 @@ gghistogram(
 )
 
 # Saving MT6.5 plots
-ggsave("Appendix_Dist_SDF_TL.pdf", 
+ggsave("output/figures/Appendix_Dist_SDF_TL.pdf", 
        plot = last_plot(), 
        width = 297, height = 210, 
        units = "mm",

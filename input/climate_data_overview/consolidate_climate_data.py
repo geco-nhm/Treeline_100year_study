@@ -1,51 +1,45 @@
-# %%
-import pandas as pd 
-import os
-import re
+"""Rename the per-site climate text files (input/climate_data/<ID>.txt) to CSV
+files with the harmonised site name in the header (input/climate_data_csv/).
 
-# Load the mapping CSV
-csv_file_path = r"c:\Users\peterhor\Documents\GitHub\Treeline_100year_study\input\climate_data_overview\sites_mapping.csv"
-mapping_df = pd.read_csv(csv_file_path, header=0)  # Read the CSV with the first line as column names
+The raw per-site files are not distributed with this repository; the resulting
+files in input/climate_data_csv/ are. This script documents how they were made.
 
-# Ensure the ID column is properly stripped of whitespace
-mapping_df['ID'] = mapping_df['ID'].astype(str).str.strip()
+Note: an earlier version read the files with a different encoding than the one
+they were written in, which split the site name "30Årb_T_S_H" in two and shifted
+all values of that site one column to the left (fixed in 17.csv). The header is
+now validated against the number of data columns.
+"""
+from pathlib import Path
 
-# Define the folder containing the text files
-folder_path = r"c:\Users\peterhor\Documents\GitHub\Treeline_100year_study\input\climate_data"
-output_folder = r"c:\Users\peterhor\Documents\GitHub\Treeline_100year_study\input\climate_data_csv"
+import pandas as pd
 
-# Ensure the output folder exists
-os.makedirs(output_folder, exist_ok=True)
+ROOT = Path(__file__).resolve().parents[2]
+MAPPING = ROOT / "input" / "climate_data_overview" / "sites_mapping.csv"
+SRC = ROOT / "input" / "climate_data"
+DST = ROOT / "input" / "climate_data_csv"
+ENCODING = "utf-8"  # the raw files were converted to UTF-8 beforehand
 
-# Natural sorting function
-def natural_sort_key(s):
-    return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
-#%%
-# Process files in natural order
-for _, row in mapping_df.iterrows():
-    file_id = str(row['ID'])  # Get the ID from the current row
-    replacement = row.iloc[2]  # Assuming the third column contains the replacement string
 
-    file_name = f"{file_id}.txt"
-    file_path = os.path.join(folder_path, file_name)
+def main():
+    mapping = pd.read_csv(MAPPING, dtype=str)
+    mapping["ID"] = mapping["ID"].str.strip()
+    DST.mkdir(parents=True, exist_ok=True)
 
-    if os.path.exists(file_path):
-        with open(file_path, "r", encoding="ISO-8859-1") as file:
-            lines = file.readlines()
+    for _, row in mapping.iterrows():
+        src = SRC / f"{row['ID']}.txt"
+        if not src.exists():
+            continue
+        lines = src.read_text(encoding=ENCODING).splitlines(keepends=True)
+        # Split on tabs/spaces only: str.split() without arguments also splits on
+        # Unicode whitespace such as U+0085, which is what broke "30Årb_T_S_H".
+        header = lines[0].replace("\t", " ").strip().split(" ")
+        header = [h for h in header if h]
+        n_data = len(lines[1].split())
+        if len(header) != n_data:
+            raise ValueError(f"{src.name}: header has {len(header)} fields, data has {n_data}")
+        lines[0] = "\t".join([row["Site_new"]] + header[1:]) + "\n"
+        (DST / f"{row['ID']}.csv").write_text("".join(lines), encoding="utf-8")
 
-        # Debug: Print the first line before modification
-        if lines:
-            print(f"Original first line in {file_name}: {lines[0].strip()}")
-            first_line_parts = lines[0].split(maxsplit=1)
-            if len(first_line_parts) > 1:
-                lines[0] = replacement + '\t' + first_line_parts[1]  # Keep the remaining parts of the first line
-            else:
-                lines[0] = replacement + '\n'  # If there's only one string, replace it entirely
 
-            # Debug: Print the modified first line
-            print(f"Modified first line in {file_name}: {lines[0].strip()}")
-
-        # Save the updated content as a CSV in the output folder
-        output_file_path = os.path.join(output_folder, file_name.replace(".txt", ".csv"))
-        with open(output_file_path, "w", encoding="utf-8") as file:
-            file.writelines(lines)
+if __name__ == "__main__":
+    main()

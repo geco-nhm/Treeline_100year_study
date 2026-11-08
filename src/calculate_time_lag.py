@@ -1,78 +1,45 @@
-#%%
+"""Match each TFL registration with the mean climate of the 20 years before it.
+
+Inputs:  output/Treeline_long_V6.csv  (one row per site and registration)
+         output/climate_data.csv      (from compile_climate_data.py)
+Outputs: output/matched_climate_data.csv    (read by the R pipeline, S0)
+         output/unmatched_climate_data.csv  (registrations without climate data)
+
+For each registration year Y the window is Y-20 <= year < Y. The climate series
+start in 1868, so registrations from 1887 get a 19-year window.
+"""
+from pathlib import Path
+
 import pandas as pd
-import difflib
 
-# Define the home folder path
-home_folder = 'c:\\Users\\peterhor\\Documents\\GitHub\\Treeline_100year_study\\'
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / "output"
 
-# Load the data from the CSV files
-treeline_df = pd.read_csv(home_folder + 'output\\Treeline_long_V6.csv')
-climate_df = pd.read_csv(home_folder + 'output\\climate_data.csv')
-
-# Extract the columns we are interested in
-columns_of_interest = ['site_name', 'year', 'MAT', 'HMT', 'LMT', 'ATD', 'WQ', 'CQ', 'M-JJAS', 'JJAS-TD',
-                       'APS', 'HMP', 'LMP', 'APD', 'PSWQ', 'PSDQ', 'PS-JJAS', 'JJAS-PD', 'MT0', 'MT5', 
-                       'MT5.5', 'MT6', 'MT6.5', 'MT7', 'MT7.5', 'MT10']
-
-# Extract only the relevant columns from the climate data
-climate_df = climate_df[columns_of_interest]
-
-# Get a list of all unique 'site_name' values in climate_df for matching
-unique_site_names = climate_df['site_name'].unique()
-
-# Initialize a list to collect the matched data
-matched_data = []
-
-# Initialize a list to collect unmatched IDs
-unmatched_ids = []
-
-# Initialize a list to collect match status
-match_status = []
-#%%
-# Iterate over each row in treeline_df
-for _, row in treeline_df.iterrows():
-    current_id = row['ID']
-    reg_year = row['REG_year']
-    
-    # Find records in climate_df with matching 'site_name' and 'year'
-    matched_rows = climate_df[(climate_df['site_name'] == current_id) & (climate_df['year'] == reg_year)]
-    
-    if not matched_rows.empty:
-        # Extract the 20 years prior to the matched year and calculate the average for each column
-        previous_20_years = climate_df[(climate_df['site_name'] == current_id) & (climate_df['year'] < reg_year) & (climate_df['year'] >= reg_year - 20)]
-        if not previous_20_years.empty:
-            average_values = previous_20_years.mean(numeric_only=True)
-            average_values['site_name'] = current_id
-            average_values['year'] = reg_year
-            average_values['ID'] = current_id  # Add the ID column
-            matched_data.append(average_values)
-            match_status.append({'ID': current_id, 'REG_year': reg_year, 'Matched': True})
-        else:
-            # If no data for the previous 20 years, append the matched rows as is
-            matched_rows['ID'] = current_id  # Add the ID column
-            matched_data.append(matched_rows)
-            match_status.append({'ID': current_id, 'REG_year': reg_year, 'Matched': True})
-    else:
-        # If no match is found, add the current ID to unmatched_ids
-        unmatched_ids.append(current_id)
-        match_status.append({'ID': current_id, 'REG_year': reg_year, 'Matched': False})
-
-# Concatenate all matched rows into a DataFrame
-matched_data_df = pd.DataFrame(matched_data) if matched_data else pd.DataFrame(columns=columns_of_interest + ['ID'])
-
-# Attempt to find approximate matches for unmatched IDs
-newly_matched_data = []
-
-#%%
-# Reorder columns to have 'site_name' as the first column
-columns_order = ['site_name', 'ID', 'year'] + [col for col in columns_of_interest if col not in ['site_name', 'year']]
-matched_data_df = matched_data_df[columns_order]
+VARIABLES = ["MAT", "HMT", "LMT", "ATD", "WQ", "CQ", "M-JJAS", "JJAS-TD",
+             "APS", "HMP", "LMP", "APD", "PSWQ", "PSDQ", "PS-JJAS", "JJAS-PD",
+             "MT0", "MT5", "MT5.5", "MT6", "MT6.5", "MT7", "MT7.5", "MT10"]
 
 
-# Save the updated matched data to a new CSV file
-matched_data_df.to_csv(home_folder + 'matched_climate_data.csv', index=False)
+def main():
+    treeline = pd.read_csv(OUT / "Treeline_long_V6.csv")
+    climate = pd.read_csv(OUT / "climate_data.csv")[["site_name", "year"] + VARIABLES]
 
-# Save and display an overview of unmatched entries
-unmatched_ids_df = pd.DataFrame(unmatched_ids, columns=['unmatched_IDs'])
-unmatched_ids_df.to_csv(home_folder + 'unmatched_climate_data.csv', index=False)
-# %%
+    matched, unmatched = [], []
+    for _, row in treeline.iterrows():
+        site, reg_year = row["ID"], row["REG_year"]
+        series = climate[climate["site_name"] == site]
+        if not (series["year"] == reg_year).any():
+            unmatched.append({"ID": site, "REG_year": reg_year})
+            continue
+        window = series[(series["year"] < reg_year) & (series["year"] >= reg_year - 20)]
+        means = window[VARIABLES].mean()
+        matched.append({"site_name": site, "ID": site, "year": reg_year, **means.to_dict()})
+
+    pd.DataFrame(matched).to_csv(OUT / "matched_climate_data.csv", index=False)
+    pd.DataFrame(unmatched, columns=["ID", "REG_year"]).to_csv(
+        OUT / "unmatched_climate_data.csv", index=False)
+    print(f"matched {len(matched)}, unmatched {len(unmatched)}")
+
+
+if __name__ == "__main__":
+    main()

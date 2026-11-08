@@ -1,32 +1,40 @@
-#%%
+"""Combine the per-site climate files (input/climate_data_csv/*.csv) into one
+long table: output/climate_data.csv (one row per site and year).
+
+Each input file is tab-separated. The first header field is the site ID, the
+first column holds the year, and missing values are empty fields.
+"""
+from pathlib import Path
+
 import pandas as pd
-import os
-# Define the home folder path
-home_folder = 'c:\\Users\\peterhor\\Documents\\GitHub\\Treeline_100year_study\\'
-#%%
-# Iterate through all climate data text files in the directory
-climate_files = [f for f in os.listdir(home_folder +'input\\' + 'climate_data_csv\\') if f.endswith('.csv')]
-print(climate_files)
-# Initialize an empty list to store climate dataframes
-climate_data_list = []
-#%%
-# Load each climate data file and append to the list
-for file in climate_files:
-    try:
-        # Load the data and use the first column as the site name
-        climate_data = pd.read_csv(home_folder +'input\\'+ 'climate_data_csv\\' + file, delim_whitespace=True, encoding='utf-8')
-        site_name = climate_data.columns[0]  # Save the first column name as the site name
-        climate_data.rename(columns={site_name: 'year'}, inplace=True)  # Rename the first column to 'year'
-        climate_data.insert(0, 'site_name', site_name)  # Insert site name as the first column with column name 'site_name'
-        climate_data_list.append(climate_data)
-    except UnicodeDecodeError:
-        print(f"Error reading file: {file}. Skipping this file.")
 
-# Concatenate all climate data into a single dataframe vertically (new tables go beneath each other)
-climate_data = pd.concat(climate_data_list, axis=0, ignore_index=True)
-#%%
-# Save the concatenated climate data to disk
-climate_data.to_csv(home_folder + 'climate_data.csv', index=False)
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "input" / "climate_data_csv"
+OUT = ROOT / "output" / "climate_data.csv"
+
+VARIABLES = ["MAT", "HMT", "LMT", "ATD", "WQ", "CQ", "M-JJAS", "JJAS-TD",
+             "APS", "HMP", "LMP", "APD", "PSWQ", "PSDQ", "PS-JJAS", "JJAS-PD",
+             "MT0", "MT5", "MT5.5", "MT6", "MT6.5", "MT7", "MT7.5", "MT10"]
 
 
-# %%
+def read_site(path):
+    df = pd.read_csv(path, sep="\t", encoding="utf-8")
+    site = df.columns[0]
+    # Guard against the header/column shift that once affected 17.csv.
+    if list(df.columns[1:]) != VARIABLES:
+        raise ValueError(f"{path.name}: unexpected header {list(df.columns)}")
+    df = df.rename(columns={site: "year"})
+    df.insert(0, "site_name", site.strip())
+    return df
+
+
+def main():
+    files = sorted(SRC.glob("*.csv"), key=lambda p: int(p.stem))
+    climate = pd.concat([read_site(f) for f in files], ignore_index=True)
+    OUT.parent.mkdir(exist_ok=True)
+    climate.to_csv(OUT, index=False)
+    print(f"{len(files)} sites, {len(climate)} rows -> {OUT.relative_to(ROOT)}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,14 +1,16 @@
-# %%
+#%%
 import pandas as pd
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
 import matplotlib.pyplot as plt
 
 # Load the full climate data and the matched climate data
-climate_df = pd.read_csv('../output/climate_data.csv')
-matched_df = pd.read_csv('../output/matched_climate_data.csv')
+climate_df = pd.read_csv(ROOT / 'output' / 'climate_data.csv')
+matched_df = pd.read_csv(ROOT / 'output' / 'matched_climate_data.csv')
 
-# Specify the site and variables of interest
+# Specify the site
 site_name = '14Hei_F_NW_H'   # site name
-variables = ['MAT']  # variables of interest
 
 # Filter data for the chosen site
 site_climate = climate_df[climate_df['site_name'] == site_name]
@@ -17,17 +19,15 @@ site_matched = matched_df[matched_df['site_name'] == site_name]
 print("site_climate empty?", site_climate.empty)
 print("site_matched empty?", site_matched.empty)
 
+# Get all available variables (common columns excluding 'site_name' and 'year')
+variables = [col for col in site_climate.columns if col in site_matched.columns and col not in ['site_name', 'year']]
+
+print("Variables to plot:", variables)
+
 # Define a list of colors for marking different matched periods
 colors = ['red', 'green', 'orange']  # Adjust if more periods exist
 
 for variable in variables:
-    if variable not in site_climate.columns:
-        print(f"Skipping {variable}: not found in climate_data columns")
-        continue
-    if variable not in site_matched.columns:
-        print(f"Skipping {variable}: not found in matched_climate_data columns")
-        continue
-
     # Create the canvas for plotting
     plt.figure(figsize=(16, 8))
 
@@ -80,10 +80,9 @@ for variable in variables:
             )
         )
 
-    # If the variable is one of the specified ones, add vertical shading for the reference period 1981-2010
-    if variable in ['JJAS-PD', 'APD', 'MPD', 'MAT', 'WQ', 'M-JJAS']:
-        plt.axvspan(1981, 2010, color='grey', alpha=0.2,
-                    label='Reference Period\n(1981-2010)')
+    # Add vertical shading for the reference period 1981-2010
+    plt.axvspan(1981, 2010, color='grey', alpha=0.2,
+                label='Reference Period\n(1981-2010)')
 
     # Optionally, remove the frame (axes spines)
     ax = plt.gca()
@@ -94,7 +93,7 @@ for variable in variables:
     plt.xlabel('Year')
     plt.ylabel(variable)
     plt.title(
-        f'Mean Annual Temperature Over Time for Forest Line at Heimdalshøe (1197masl)\n'
+        f'{variable} Over Time for {site_name}\n'
         f'with 20-Year Averaged Pre-Registration Periods'
     )
     plt.legend()
@@ -102,11 +101,10 @@ for variable in variables:
     plt.tight_layout()
 
     # Save the plot as a PNG file
-    out_path = f'../output/{variable}_{site_name}_new_300dpi_hardcoded.png'
+    out_path = ROOT / 'output' / 'all_vars' / f'{variable}_{site_name}_new_300dpi.png'
     plt.savefig(out_path, dpi=300, bbox_inches='tight')
     print("Saved:", out_path)
 
     # Show the plot on the canvas
     plt.show()
-
 # %%

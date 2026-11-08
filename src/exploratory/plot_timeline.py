@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.patches import Patch
 
-HOME = Path(__file__).resolve().parent.parent
+HOME = Path(__file__).resolve().parents[2]
 INFILE = HOME / "output" / "Treeline_long_V6.csv"
 OUTDIR = HOME / "output"
 

@@ -2,9 +2,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
 #%%
 # Load the matched climate data
-file_path = r"C:\gitHub\Treeline_100year_study\output\matched_climate_data.csv"
+file_path = ROOT / "output" / "matched_climate_data.csv"
 matched_climate_data = pd.read_csv(file_path, encoding='utf-8')
 #%%
 # Display the first few rows and summary information about the dataset to understand its structure
@@ -62,7 +65,7 @@ plt.show()
 # %%
 
 # Load the Treeline_long_V6 data
-treeline_data_path = r"C:\gitHub\Treeline_100year_study\output\Treeline_long_V6.csv"
+treeline_data_path = ROOT / "output" / "Treeline_long_V6.csv"
 treeline_data = pd.read_csv(treeline_data_path, encoding='utf-8')
 
 # Display the structure of the treeline dataset to understand the columns and check for lat/long or region information

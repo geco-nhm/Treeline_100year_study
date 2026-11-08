@@ -1,83 +1,100 @@
-# Output Folder Overview
+# Tales from the past: remapping dynamic tree- and forest lines
 
-The output folder of this repository contains several key files generated as part of the data processing and analysis pipeline. Below is an overview of the files, their purposes, and the data they contain.
+Data and code for:
 
-## Files
+> Tjessem, I. V., Horvath, P., Naas, A. E., Halvorsen, R., Potthoff, K., Isaksen, K., Tveito, O. E., Berntsen, T. K., Mienna, I. M., and Bryn, A.: Tales from the past: remapping dynamic tree- and forest lines in response to changing climate and current land use, EGUsphere, egusphere-2026-2717, 2026.
 
-### 1. `climate_data.csv`
+The study remaps historical tree- and forest line (TFL) records of mountain birch (*Betula pubescens* ssp. *czerepanovii*) in Norway, first recorded 1887–1969 and revisited 2016–2019. It relates the change in TFL elevation to climate change (20-year means before each record) and land use (grazing pressure, proximity to mountain summer farms).
 
-- **Description:**
-  Contains the climate dataset with information on various climate parameters for specific sites and years.
-- **Key Columns:**
-  - `site_name`: Name of the site.
-  - `year`: Year of the climate data.
-  - Climate parameters: Includes metrics such as:
-    - `MAT`: Mean Annual Temperature
-    - `HMT`: Highest Monthly Temperature
-    - `LMT`: Lowest Monthly Temperature
-    - `ATD`: Annual Temperature Deviation
-    - `WQ`: Warmest Quarter
-    - `CQ`: Coldest Quarter
-    - `MT-JJAS`: Mean Temperature June-September
-    - `JJAS-TD`: JJAS Temperature Deviation
-    - `MMT`: Mean Monthly Temperature
-    - `MTD`: Monthly Temperature Deviation
-    - `MT0`: Monthly Temperature > 0
-    - `MT5`: Monthly Temperature > 5
-    - `MT5.5`: Monthly Temperature > 5.5
-    - `MT6`: Monthly Temperature > 6
-    - `MT6.5`: Monthly Temperature > 6.5
-    - `MT7`: Monthly Temperature > 7
-    - `MT7.5`: Monthly Temperature > 7.5
-    - `MT10`: Monthly Temperature > 10
-    - `APS`: Annual Precipitation Sum
-    - `HMP`: Highest Monthly Precipitation
-    - `LMP`: Lowest Monthly Precipitation
-    - `APD`: Annual Precipitation Deviation
-    - `PSWQ`: Precipitation Sum Wettest Quarter
-    - `PSDQ`: Precipitation Sum Driest Quarter
-    - `PS-JJAS`: Precipitation Sum Jun-Sep
-    - `JJAS-PD`: JJAS Precipitation Deviation
-    - `MPS`: Monthly Precipitation Sum
-    - `MPD`: Monthly Precipitation Deviation
+Corresponding author: Ingrid Vesterdal Tjessem (i.v.tjessem@nhm.uio.no)
 
-### 2. `matched_climate_data.csv`
+## Repository layout
 
-- **Description:**
-  This file contains data for rows from the treeline dataset (`Treeline_long_V6.csv`) that successfully matched with corresponding climate data.
-- **Key Columns:**
-  - `ID`: Identifier for the treeline entry.
-  - `year`: Registration year of the treeline entry.
-  - Matched climate data: Contains averages for **20 years** before the registration year for the matched sites.
+```
+input/
+  Dataset_V6.csv / .xlsx            TFL registrations, one row per site (wide)
+  climate_data_csv/<n>.csv          annual climate variables per site, 1868–2019 (tab-separated)
+  climate_data_overview/            site-name mapping and variable dictionary for the climate files
+  landuse_data_csv/                 grazing pressure per municipality
+output/
+  Treeline_long_V6.csv              TFL registrations, one row per site and record (long)
+  climate_data.csv                  all climate files combined
+  matched_climate_data.csv          20-year climate means before each record
+  unmatched_climate_data.csv        records without climate data
+  analysis/                         intermediate tables and results of the R analysis
+  figures/                          figures of the paper
+src/
+  wide_to_long.py, compile_climate_data.py, calculate_time_lag.py   data preparation (Python)
+  Paper I_S0 … S4 *.R, run_all.R                                    statistical analysis (R)
+  exploratory/                       exploratory plots, not needed for the results
+```
 
-### 3. `unmatched_climate_data.csv`
+## Reproducing the results
 
-- **Description:**
-  Contains treeline entries that could not be matched with climate data due to discrepancies in site names, missing data, or other issues.
-- **Key Columns:**
-  - `ID`: Identifier for the treeline entry.
-  - `year`: Registration year of the treeline entry.
-  - Additional notes on unmatched status.
+All commands are run from the repository root.
 
-### 4. `Treeline_long_V6.csv`
+### 1. Data preparation (Python ≥ 3.10)
 
-- **Description:**
-  The processed treeline dataset used in the analysis. This is the latest version with updated data and metadata.
-- **Key Columns:**
-  - `ID`: Unique identifier for each treeline entry.
-  - `REG_year`: Registration year of the treeline.
-  - Metadata fields relevant to treeline growth and ecosystem monitoring.
+```sh
+pip install -r requirements.txt
+python src/wide_to_long.py           # input/Dataset_V6.xlsx  -> output/Treeline_long_V6.csv
+python src/compile_climate_data.py   # input/climate_data_csv -> output/climate_data.csv
+python src/calculate_time_lag.py     # -> output/matched_climate_data.csv, output/unmatched_climate_data.csv
+```
 
-## Usage
+For each record in year *Y*, `calculate_time_lag.py` averages the climate over *Y*−20 ≤ year < *Y*. The climate series start in 1868, so records from 1887 get a 19-year window. Eleven sites have no climate data (listed in `unmatched_climate_data.csv`).
 
-- **Analysis Pipeline in [src](https://github.com/geco-nhm/Treeline_100year_study/tree/main/src) folder:**
-  - The climate data is matched with treeline data to study the relationships between climate parameters and treeline dynamics.
-  - Matched entries are analyzed to extract meaningful patterns, while unmatched entries are examined to identify data gaps or issues.
+### 2. Statistical analysis (R ≥ 4.3)
 
-## Notes
+```r
+install.packages(c("data.table", "ggplot2", "dplyr", "tidyr", "ggpubr", "car", "corrplot"))
+```
+```sh
+Rscript src/run_all.R
+```
 
-- The files are interdependent and should be used as part of the repository’s analysis workflow.
-- Ensure consistency between file versions when running the pipeline to avoid mismatches.
+| Script | What it does | Writes to `output/analysis/` |
+|---|---|---|
+| S0 Assemble Data | joins registrations, climate and grazing data (first and latest record) | `paper_I_full_data_long_correlation.csv` |
+| S1 Data prep | computes the change between the first and latest record | `TFL_df_corr.csv` |
+| S2 Correlation | summit-syndrome buffer, Kendall correlations | `TL_df_NoSummitSyndrome.csv`, `FL_df_NoSummitSyndrome.csv` |
+| S3 Modeling | Bonferroni-corrected forward selection, 4-fold cross-validation | `Table2_kendall.csv`, `final_models.csv`, `TableD1_crossvalidation.csv` |
+| S4 Dataframe plots, S4 Plots | figures | `TFL_df_plot.csv`; figures in `output/figures/` |
 
-For further details on how these files are generated and utilized, refer to the main documentation or script comments in the repository.
+`output/analysis/sessionInfo.txt` records the R and package versions of the last run. Optional diagnostics in S4 use the packages `performance` and `sjPlot` when they are installed.
 
+## Variables
+
+Climate variables per site and year (`input/climate_data_csv/`, see also `input/climate_data_overview/climate_variables_dict.json`):
+
+| Code | Variable | Code | Variable |
+|---|---|---|---|
+| MAT | mean annual temperature | APS | annual precipitation sum |
+| HMT | highest monthly temperature | HMP | highest monthly precipitation |
+| LMT | lowest monthly temperature | LMP | lowest monthly precipitation |
+| ATD | annual temperature anomaly | APD | annual precipitation anomaly |
+| WQ | mean temperature of the warmest quarter | PSWQ | precipitation sum of the warmest quarter |
+| CQ | mean temperature of the coldest quarter | PSDQ | precipitation sum of the driest quarter |
+| M-JJAS | tetratherm (June–September) mean temperature | PS-JJAS | tetratherm precipitation sum |
+| JJAS-TD | tetratherm temperature anomaly | JJAS-PD | tetratherm precipitation anomaly |
+| MT*x* | number of months with mean temperature > *x* °C (0, 5, 5.5, 6, 6.5, 7, 7.5, 10) | | |
+
+In the R scripts, hyphens in names become dots (`M-JJAS` → `M.JJAS`).
+
+## Data sources
+
+- **TFL records:** historical records by B. Aas, Hanna Resvoll-Holmsen, Johannes M. Normann, Søren Ve and others, remapped in the field 2016–2019 (this study).
+- **Climate:** derived from observation-based 1 × 1 km gridded monthly temperature and precipitation for Norway and long-term station records, Norwegian Meteorological Institute (MET Norway). See the paper for details.
+- **Grazing:** livestock numbers per municipality from the Norwegian Agriculture Agency (2003–2019) and historical agricultural censuses (Statistics Norway and its precursor, 1891–1969).
+
+## Licence
+
+To be added.
+
+## Change log
+
+- **Release for the paper:**
+  - Corrected a column shift in the climate data of site `30Årb_T_S_H`. An encoding error had placed every value one column to the left.
+  - Restored the climate data of forest-line sites `19Aub_F_W_V` and `19Veb_F_SE_V`, which were dropped because their IDs were spelled differently.
+  - Corrected the summation of cross-validation errors.
+  - Made the analysis reproducible from the repository with `src/run_all.R`.

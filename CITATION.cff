@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this data or code, please cite the article below."
+title: "Tales from the past: remapping dynamic tree- and forest lines – data and code"
+repository-code: "https://github.com/geco-nhm/Treeline_100year_study"
+authors:
+  - {family-names: Tjessem, given-names: Ingrid Vesterdal}
+  - {family-names: Horvath, given-names: Peter}
+  - {family-names: Naas, given-names: Adam Eindride}
+  - {family-names: Halvorsen, given-names: Rune}
+  - {family-names: Potthoff, given-names: Kerstin}
+  - {family-names: Isaksen, given-names: Ketil}
+  - {family-names: Tveito, given-names: Ole Einar}
+  - {family-names: Berntsen, given-names: Terje Koren}
+  - {family-names: Mienna, given-names: Ida Marielle}
+  - {family-names: Bryn, given-names: Anders}
+preferred-citation:
+  type: article
+  title: "Tales from the past: remapping dynamic tree- and forest lines in response to changing climate and current land use"
+  journal: "EGUsphere"
+  year: 2026
+  notes: "Preprint egusphere-2026-2717"
+  authors:
+    - {family-names: Tjessem, given-names: Ingrid Vesterdal}
+    - {family-names: Horvath, given-names: Peter}
+    - {family-names: Naas, given-names: Adam Eindride}
+    - {family-names: Halvorsen, given-names: Rune}
+    - {family-names: Potthoff, given-names: Kerstin}
+    - {family-names: Isaksen, given-names: Ketil}
+    - {family-names: Tveito, given-names: Ole Einar}
+    - {family-names: Berntsen, given-names: Terje Koren}
+    - {family-names: Mienna, given-names: Ida Marielle}
+    - {family-names: Bryn, given-names: Anders}

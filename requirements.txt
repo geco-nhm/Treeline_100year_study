@@ -1,0 +1,4 @@
+pandas>=2.2
+openpyxl>=3.1
+matplotlib>=3.8   # exploratory plots only
+seaborn>=0.13     # exploratory plots only

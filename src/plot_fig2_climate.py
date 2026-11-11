@@ -1,8 +1,14 @@
 # %%
+"""Figure 2: mean annual temperature at one forest line site (Heimdalshøe) with the
+20-year averaging windows before each registration.
+
+Writes output/figures/Fig2.png and .pdf. Run from anywhere; paths are resolved
+relative to this file.
+"""
 import pandas as pd
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 import matplotlib.pyplot as plt
 
 # Load the full climate data and the matched climate data
@@ -104,12 +110,11 @@ for variable in variables:
     plt.grid(True)
     plt.tight_layout()
 
-    # Save the plot as a PNG file
-    out_path = ROOT / 'output' / f'{variable}_{site_name}_new_300dpi_hardcoded.png'
+    # Save the figure
+    out_path = ROOT / 'output' / 'figures' / 'Fig2.png'
     plt.savefig(out_path, dpi=300, bbox_inches='tight')
+    plt.savefig(out_path.with_suffix('.pdf'), bbox_inches='tight')
+    plt.close()
     print("Saved:", out_path)
-
-    # Show the plot on the canvas
-    plt.show()
 
 # %%

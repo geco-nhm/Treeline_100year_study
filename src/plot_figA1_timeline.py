@@ -1,12 +1,13 @@
 # %%
-"""Timeline of the treeline datasets.
+"""Figure A1: timeline of the treeline datasets.
 
 One row per first originator (REG_name of the REG1 record). Within a row, one bar
 per registration campaign (REG1 / REG2 / REG3, split by the registering originator)
 spanning the years in which the sites of that group were visited. Bar labels give
 the originator and the number of sites.
 
-Run from anywhere; paths are resolved relative to this file.
+Writes output/figures/FigA1.png and .pdf. Run from anywhere; paths are resolved
+relative to this file.
 """
 from pathlib import Path
 
@@ -14,22 +15,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.patches import Patch
 
-HOME = Path(__file__).resolve().parents[2]
+HOME = Path(__file__).resolve().parents[1]
 INFILE = HOME / "output" / "Treeline_long_V6.csv"
-OUTDIR = HOME / "output"
+OUTDIR = HOME / "output" / "figures"
 
-# Figure versions. v1: neutral palette. v2: bar colours matching the climate
-# plots (plot.py), everything else identical. v3: like v2, but the recent revisit
-# (REG3) is one bar per row without naming the mappers. All are written on every run.
+# Figure style used in the paper (bar colours match Figure 2).
 STYLES = {
-    "v1": dict(
-        colors={"REG1": "#2a78d6", "REG2": "#eb6834", "REG3": "#1baf7a"},
-        labels={"REG1": "REG1 - original registration",
-                "REG2": "REG2 - first revisit",
-                "REG3": "REG3 - recent revisit"},
-        boxed_labels=False, title=None, connector="#c8c7c1",
-    ),
-    "v2": dict(
+    "FigA1": dict(
         colors={"REG1": "red", "REG2": "green", "REG3": "orange"},
         labels={"REG1": "Registration 1 (original)",
                 "REG2": "Registration 2 (first revisit)",
@@ -37,7 +29,6 @@ STYLES = {
         boxed_labels=False, title=None, connector="#c8c7c1",
     ),
 }
-STYLES["v3"] = dict(STYLES["v2"], merge_reg3=True)
 MIN_BAR_WIDTH = 2.0   # years; single-year campaigns get at least this width
 MERGE_SMALL = True    # merge REG3 originators with fewer sites than this into one bar
 SMALL_N = 3
@@ -78,7 +69,7 @@ n_sites = df[df.REG_Group == "REG1"].groupby("first_name").ID.nunique()
 def draw(version):
     st = STYLES[version]
     GROUP_COLORS, GROUP_LABELS = st["colors"], st["labels"]
-    outfile = OUTDIR / f"timeline_datasets_{version}_300dpi.png"
+    outfile = OUTDIR / f"{version}.png"
     fig, ax = plt.subplots(figsize=(11, 4.8))
     camp_v = camp
     if st.get("merge_reg3"):

@@ -18,8 +18,9 @@ Manuscript*.pdf
 
 # Co-author working copies used to verify reproduction (contain personal paths)
 input/ingrid_rebuild/
+input/ingrid_rebuild2/
 
-# Exploratory figures (regenerate with src/plot_*.py)
+# Figures: the paper figures are tracked as PDF in output/figures/; PNG copies and
+# any other plots are not tracked
 output/**/*.png
-output/**/*.pdf
-!output/figures/*.pdf
+output/*.pdf

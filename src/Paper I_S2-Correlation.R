@@ -316,6 +316,14 @@ ggsave(
   units  = "mm",
   device = cairo_pdf
 )
+ggsave(
+  "output/figures/Appendix_SummitSyndrome_TLs.png",
+  plot   = TL_figure,
+  width  = 410,
+  height = 497,
+  units  = "mm",
+  dpi = 300, device = ragg::agg_png, bg = "white"
+)
 
 #for (i in 1:20) {
 #  TL_df_Filtered_DistToSummit <- TL_df_corr[TL_df_corr$DistToSummit >= i*10, ]
@@ -405,6 +413,14 @@ ggsave(
   height = 497,
   units  = "mm",
   device = cairo_pdf
+)
+ggsave(
+  "output/figures/Appendix_SummitSyndrome_FLs.png",
+  plot   = FL_figure,
+  width  = 410,
+  height = 497,
+  units  = "mm",
+  dpi = 300, device = ragg::agg_png, bg = "white"
 )
 
 

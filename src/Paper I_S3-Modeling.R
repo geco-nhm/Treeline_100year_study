@@ -192,13 +192,16 @@ corrplot.mixed(
 #5. Dist_SDF
 #7. MAT
 #8. MT5.5
-#9. WQ
-#10. PSDQ
-#11. log_mean_graz_20yr_prMun
+#9. MT6
+#10. CQ
+#11. PSDQ
+#12. log_mean_graz_20yr_prMun
+# (Release for the paper: with the corrected data, CQ and MT6 are significantly
+#  correlated with TL advance and WQ is not; see Table 2.)
 
 # Selecting EVs for modeling df
 colnames(Ascending_TL_df)
-TL_Ascending_modeling <- (Ascending_TL_df[, c("Dist_SDF", "years", "REG_alt", "MAT", "WQ", "PSDQ", "MT5.5", "MT6.5", "MT7", "log_mean_graz_20yr_prMun", "DistToSummit")])
+TL_Ascending_modeling <- (Ascending_TL_df[, c("Dist_SDF", "years", "REG_alt", "MAT", "CQ", "PSDQ", "MT5.5", "MT6", "MT6.5", "MT7", "log_mean_graz_20yr_prMun", "DistToSummit")])
 
 # na.omit
 TL_Ascending_modeling_df <- na.omit(TL_Ascending_modeling)
@@ -220,7 +223,7 @@ corrplot.mixed(
 
 # Corr-plot FLs
 corrplot.mixed(
-  cor(Ascending_TL_df[, c("Dist_SDF", "years", "REG_alt", "MAT", "WQ", "PSDQ", "MT5.5", "MT6.5", "MT7", "log_mean_graz_20yr_prMun", "DistToSummit")],
+  cor(Ascending_TL_df[, c("Dist_SDF", "years", "REG_alt", "MAT", "CQ", "PSDQ", "MT5.5", "MT6", "MT6.5", "MT7", "log_mean_graz_20yr_prMun", "DistToSummit")],
       method = "kendall",
       use = "complete.obs"),
   main = "TL_Ascending EVs",
@@ -435,101 +438,108 @@ summary(model_FLs_1a)                               # p = 0.00288 **
 #3. Dist_SDF
 #4. MAT
 #5. MT5.5
-#6. WQ
-#7. log_mean_graz_20yr_prMun
+#6. CQ
+#7. MT6
+#8. log_mean_graz_20yr_prMun
 
 model_ATLs_0<-lm(REG_alt ~ +1, data = TL_Ascending_modeling_df)
-summary(model_ATLs_0)                          # p = <2e-16 ***
+summary(model_ATLs_0)
 
 
 ###### Round 1 ######
 #______________________________________________________________________________
-#'        Checking the six environmental variables for significance
-#'        by comparison with null model. 
-#'        MT6.5, MT7, Dist_SDF, MAT, MT5.5, WQ,
+#'        Checking the eight environmental variables for significance
+#'        by comparison with null model.
+#'        MT6.5, MT7, Dist_SDF, MAT, MT5.5, CQ, MT6,
 #'        log_mean_graz_20yr_prMun
-#'        = 7 hypotheses --> Bonferroni correction with alpha = 0.00714
+#'        = 8 hypotheses --> Bonferroni correction with alpha = 0.00625
+#'        (p-values below: corrected data, n = 94)
 #______________________________________________________________________________
 
 
 model_ATLs_1a<-lm(REG_alt ~ MT6.5, data = TL_Ascending_modeling_df)
-anova(model_ATLs_0, model_ATLs_1a, test = "F")        # p = 6.379e-06 ***
-summary(model_ATLs_1a)                                # p = 6.38e-06 ***
+anova(model_ATLs_0, model_ATLs_1a, test = "F")        # p = 3.99e-05 ***
+summary(model_ATLs_1a)
 # Significant!
 
 
 model_ATLs_1b<-lm(REG_alt ~ MT7, data = TL_Ascending_modeling_df)
-anova(model_ATLs_0, model_ATLs_1b, test = "F")        # p = 0.0008472 ***
-summary(model_ATLs_1b)                                # p = 0.000847 ***
+anova(model_ATLs_0, model_ATLs_1b, test = "F")        # p = 0.00149 **
+summary(model_ATLs_1b)
 # Significant!
 
 
 model_ATLs_1c<-lm(REG_alt ~ Dist_SDF, data = TL_Ascending_modeling_df)
-anova(model_ATLs_0, model_ATLs_1c, test="F")          # p = 0.06385 .
-summary(model_ATLs_1c)                                # p = 0.0639 .
+anova(model_ATLs_0, model_ATLs_1c, test="F")          # p = 0.0639 .
+summary(model_ATLs_1c)
 
 
 model_ATLs_1d<-lm(REG_alt ~ MAT, data = TL_Ascending_modeling_df)
-anova(model_ATLs_0, model_ATLs_1d,test = "F")         # p = 0.0001218 ***
-summary(model_ATLs_1d)                                # p = 0.000122 ***
+anova(model_ATLs_0, model_ATLs_1d,test = "F")         # p = 7.31e-05 ***
+summary(model_ATLs_1d)
 # Significant!
 
 
 model_ATLs_1e<-lm(REG_alt ~ MT5.5, data = TL_Ascending_modeling_df)
-anova(model_ATLs_0, model_ATLs_1e, test = "F")        # p = 0.0002198 ***
-summary(model_ATLs_1e)                                # p = 0.00022 ***
+anova(model_ATLs_0, model_ATLs_1e, test = "F")        # p = 0.000185 ***
+summary(model_ATLs_1e)
 # Significant!
 
 
-model_ATLs_1f<-lm(REG_alt ~ WQ, data = TL_Ascending_modeling_df)
-anova(model_ATLs_0, model_ATLs_1f, test="F")          # p = 0.005177 **
-summary(model_ATLs_1f)                                # p = 0.005177 ** 
+model_ATLs_1f<-lm(REG_alt ~ CQ, data = TL_Ascending_modeling_df)
+anova(model_ATLs_0, model_ATLs_1f, test="F")          # p = 0.0024 **
+summary(model_ATLs_1f)
 # Significant!
 
 
 model_ATLs_1g<-lm(REG_alt ~ log_mean_graz_20yr_prMun, data = TL_Ascending_modeling_df)
-anova(model_ATLs_0, model_ATLs_1g, test = "F")        # p = 0.06177 .
-summary(model_ATLs_1g)                                # p = 0.0618 .
+anova(model_ATLs_0, model_ATLs_1g, test = "F")        # p = 0.0618 .
+summary(model_ATLs_1g)
+
+
+model_ATLs_1h<-lm(REG_alt ~ MT6, data = TL_Ascending_modeling_df)
+anova(model_ATLs_0, model_ATLs_1h, test = "F")        # p = 0.00683 ** (not below 0.00625)
+summary(model_ATLs_1h)
 
 
 #______________________________________________________________________________
-#'       Significant variables are: 
-#'       MT7, MAT, MT5.5, WQ
-#'       We select the first EV according to the lowest p-value 
+#'       Significant variables are:
+#'       MT6.5, MT7, MAT, MT5.5, CQ
+#'       We select the first EV according to the lowest p-value
 #'       --> MT6.5
 #______________________________________________________________________________
 
 
 ###### Round 2 ######
 #______________________________________________________________________________
-#'        Checking the six environmental variables for significance
-#'        by comparison with null model. 
-#'        MT7, MAT, MT5.5, WQ
+#'        Checking the remaining significant variables
+#'        MT7, MAT, MT5.5, CQ
 #'        = 4 hypotheses --> Bonferroni correction with alpha = 0.0125
 #______________________________________________________________________________
 
 model_ATLs_2a<-lm(REG_alt ~ MT6.5 + MT7, data = TL_Ascending_modeling_df)
-anova(model_ATLs_0, model_ATLs_1a, model_ATLs_2a, test = "F") # p = 0.9886
-summary(model_ATLs_2a)                                        # p = 0.988647
+anova(model_ATLs_0, model_ATLs_1a, model_ATLs_2a, test = "F") # p = 0.794
+summary(model_ATLs_2a)
 
 
 model_ATLs_2b<-lm(REG_alt ~ MT6.5 + MAT, data = TL_Ascending_modeling_df)
-anova(model_ATLs_0, model_ATLs_1a, model_ATLs_2b, test = "F") # p = 0.07515 .
-summary(model_ATLs_2b)                                        # p = 0.075148 .
+anova(model_ATLs_0, model_ATLs_1a, model_ATLs_2b, test = "F") # p = 0.0289
+summary(model_ATLs_2b)
 
 
 model_ATLs_2c<-lm(REG_alt ~ MT6.5 + MT5.5, data = TL_Ascending_modeling_df)
-anova(model_ATLs_0, model_ATLs_1a, model_ATLs_2c, test = "F") # p = 0.0396 *
-summary(model_ATLs_2c)                                        # p = 0.039603 *
+anova(model_ATLs_0, model_ATLs_1a, model_ATLs_2c, test = "F") # p = 0.0218
+summary(model_ATLs_2c)
 
 
-model_ATLs_2d<-lm(REG_alt ~ MT6.5 + WQ, data = TL_Ascending_modeling_df)
-anova(model_ATLs_0, model_ATLs_1a, model_ATLs_2d, test = "F") # p = 0.4447
-summary(model_ATLs_2d)                                        # p = 0.444687
+model_ATLs_2d<-lm(REG_alt ~ MT6.5 + CQ, data = TL_Ascending_modeling_df)
+anova(model_ATLs_0, model_ATLs_1a, model_ATLs_2d, test = "F") # p = 0.0178
+summary(model_ATLs_2d)
 
 
 #______________________________________________________________________________
-#'       Final model is 2a: 
+#'       No variable passes alpha = 0.0125 in round 2.
+#'       Final model is 1a:
 #'       --> REG_alt ~ MT6.5
 #______________________________________________________________________________
 

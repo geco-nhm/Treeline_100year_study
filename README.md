@@ -47,7 +47,7 @@ For each record in year *Y*, `calculate_time_lag.py` averages the climate over *
 ### 2. Statistical analysis (R ≥ 4.3)
 
 ```r
-install.packages(c("data.table", "ggplot2", "dplyr", "tidyr", "ggpubr", "car", "corrplot"))
+install.packages(c("data.table", "ggplot2", "dplyr", "tidyr", "ggpubr", "car", "corrplot", "ragg"))
 ```
 ```sh
 Rscript src/run_all.R
@@ -97,4 +97,6 @@ To be added.
   - Corrected a column shift in the climate data of site `30Årb_T_S_H`. An encoding error had placed every value one column to the left.
   - Restored the climate data of forest-line sites `19Aub_F_W_V` and `19Veb_F_SE_V`, which were dropped because their IDs were spelled differently.
   - Corrected the summation of cross-validation errors.
+  - Figure 4 is now computed from the data (it previously plotted hard-coded, outdated values) and saved as `output/figures/Fig4.*`; panel A of Figure 5 is no longer overwritten by an exploratory plot.
+  - Updated the preselected predictors for TL advance (coldest quarter and MT6 added, warmest quarter removed) to match the corrected Table 2; the final model is unchanged.
   - Made the analysis reproducible from the repository with `src/run_all.R`.

@@ -9,7 +9,7 @@
 #   output/figures/.
 #******************************************************************************
 
-required <- c("data.table", "ggplot2", "dplyr", "tidyr", "ggpubr", "car", "corrplot")
+required <- c("data.table", "ggplot2", "dplyr", "tidyr", "ggpubr", "car", "corrplot", "ragg")
 missing <- required[!vapply(required, requireNamespace, logical(1), quietly = TRUE)]
 if (length(missing)) stop("Install missing packages first: ", paste(missing, collapse = ", "))
 

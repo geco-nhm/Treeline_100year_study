@@ -505,6 +505,13 @@ ggsave("output/figures/Fig3.pdf",
        units = "mm", 
        device = cairo_pdf
 )
+ggsave("output/figures/Fig3.png", 
+       plot = ttest.plot, 
+       width = 297, 
+       height = 210, 
+       units = "mm", 
+       dpi = 300, device = ragg::agg_png, bg = "white"
+)
 
 
 
@@ -514,9 +521,9 @@ ggsave("output/figures/Fig3.pdf",
 model_TLs <- lm(REG_alt ~ MT6.5, data = TL_modeling_df)
 model_summary_TLs <- summary(model_TLs)
 # Extract beta estimates, SE, and RB2
-beta_TLs <- round(model_summary_TLs$coefficients[2, 1], 2)  # Coefficient for MT6.5
-se_beta_TLs <- round(model_summary_TLs$coefficients[2, 2], 2)  # Standard error for the coefficient
-r_squared_TLs <- round(model_summary_TLs$r.squared, 2)  # RB2 value
+beta_TLs <- sprintf("%.2f", model_summary_TLs$coefficients[2, 1])  # Coefficient for MT6.5
+se_beta_TLs <- sprintf("%.2f", model_summary_TLs$coefficients[2, 2])  # Standard error for the coefficient
+r_squared_TLs <- sprintf("%.2f", model_summary_TLs$r.squared)  # RB2 value
 
 
 # QQ plot
@@ -591,10 +598,7 @@ Fig_4a <- ggplot(TL_modeling_df, aes(x = MT6.5, y = REG_alt)) +
   ) +
   labs(
     title = "Treeline change",
-    x = expression(
-      "Difference in growing season length
-with mean temperature above 6.5" * degree * "C"
-    ),
+    x = "Difference in growing season length\nwith mean temperature above 6.5 °C",
     y = expression("Full rate of change (m)"),
     color = "Originators of the\nhistorical records"
   ) +
@@ -610,9 +614,9 @@ model_FLs<-lm(REG_alt ~ Dist_SDF, data = FL_modeling_df)
 model_summary_FLs <- summary(model_FLs)
 # Extract beta estimates, SE, and RB2
 # Extract beta (coefficient for Dist_SDF), SE, and RB2
-beta1_FLs <- round(model_summary_FLs$coefficients[2, 1], 2)  # Coefficient for Dist_SDF
-se_beta1_FLs <- round(model_summary_FLs$coefficients[2, 2], 2)  # Standard error for the coefficient
-r_squared_FLs <- round(model_summary_FLs$r.squared, 2)  # RB2 value
+beta1_FLs <- sprintf("%.2f", model_summary_FLs$coefficients[2, 1])  # Coefficient for Dist_SDF
+se_beta1_FLs <- sprintf("%.2f", model_summary_FLs$coefficients[2, 2])  # Standard error for the coefficient
+r_squared_FLs <- sprintf("%.2f", model_summary_FLs$r.squared)  # RB2 value
 
 
 # QQ plot
@@ -702,9 +706,9 @@ Fig_4c <- ggplot(FL_modeling_df, aes(x = Dist_SDF, y = REG_alt)) +
 model_ATLs <- lm(REG_alt ~ MT6.5, data = TL_Ascending_modeling_df)
 model_summary_ATLs <- summary(model_ATLs)
 # Extract beta estimates, SE, and RB2
-beta_ATLs <- round(model_summary_ATLs$coefficients[2, 1], 2)  # Coefficient for MT6.5
-se_beta_ATLs <- round(model_summary_ATLs$coefficients[2, 2], 2)  # Standard error for the coefficient
-r_squared_ATLs <- round(model_summary_ATLs$r.squared, 2)  # RB2 value
+beta_ATLs <- sprintf("%.2f", model_summary_ATLs$coefficients[2, 1])  # Coefficient for MT6.5
+se_beta_ATLs <- sprintf("%.2f", model_summary_ATLs$coefficients[2, 2])  # Standard error for the coefficient
+r_squared_ATLs <- sprintf("%.2f", model_summary_ATLs$r.squared)  # RB2 value
 
 # QQ plot
 qqnorm(resid(model_ATLs))
@@ -774,9 +778,7 @@ Fig_4b <- ggplot(TL_Ascending_modeling_df, aes(x = MT6.5, y = REG_alt)) +
   ) +
   labs(
     title = "Treeline advance",
-    x = expression(
-      "Difference in growing season length
-with mean temperature above 6.5"*degree*"C"),
+    x = "Difference in growing season length\nwith mean temperature above 6.5 °C",
     y = expression("Full rate of change (m)"),
     fill = "Originators of the historical records"  # Sets the legend title for fill
     ) +
@@ -792,9 +794,9 @@ with mean temperature above 6.5"*degree*"C"),
 model_AFLs <- lm(REG_alt ~ Aspect_favour, data = FL_Ascending_modeling_df)
 model_summary_AFLs <- summary(model_AFLs)
 # Extract beta estimates, SE, and RB2
-beta_AFLs <- round(model_summary_AFLs$coefficients[2, 1], 2)  # Coefficient for Aspect_favour
-se_beta_AFLs <- round(model_summary_AFLs$coefficients[2, 2], 2)  # Standard error for the coefficient
-r_squared_AFLs <- round(model_summary_AFLs$r.squared, 2)  # RB2 value
+beta_AFLs <- sprintf("%.2f", model_summary_AFLs$coefficients[2, 1])  # Coefficient for Aspect_favour
+se_beta_AFLs <- sprintf("%.2f", model_summary_AFLs$coefficients[2, 2])  # Standard error for the coefficient
+r_squared_AFLs <- sprintf("%.2f", model_summary_AFLs$r.squared)  # RB2 value
 
 # QQ plot
 qqnorm(resid(model_AFLs))
@@ -877,86 +879,50 @@ Fig_4d <- ggplot(FL_Ascending_modeling_df, aes(x = Aspect_favour, y = REG_alt)) 
         plot.margin = unit(c(1, 1, 2, 1), "lines")
   )  # push title down # Optional: adjust line height
 
-## MT6.5 #----------------------------------------------------------------------
+## Fig. 4: tau of growing-season variables #-----------------------------------
+# Kendall's tau between TL/FL change and the difference in growing season length
+# (MT0 ... MT7.5), computed from the data (same values as Table 2).
+# (Earlier versions of this script plotted hard-coded, outdated values.)
 
-# Your data with ordered factors
+MT_vars <- c("MT0", "MT5", "MT5.5", "MT6", "MT6.5", "MT7", "MT7.5")
+kendall_tau <- function(df, v) cor(df[[v]], df$REG_alt, method = "kendall", use = "complete.obs")
+
 data <- data.frame(
-  MT = factor(c("MT0", "MT5", "MT5.5", "MT6", "MT6.5", "MT7", "MT7.5"),
-              levels = c("MT0", "MT5", "MT5.5", "MT6", "MT6.5", "MT7", "MT7.5")),
-  ValueTL = c(0.113187791355215, 0.0790694869842204, 0.123440609725415, 0.129901103291538, 0.243960608620693, 0.207626339220608, 0.0769535917873393),
-  ValueFL = c(-0.0212329914640283, 0.0489110966008968, 0.103004758270397, 0.0829570846739447, 0.0593848043991257, 0.120148496099994, 0.0267234938875529)
+  MT = factor(MT_vars, levels = MT_vars),
+  ValueTL = sapply(MT_vars, kendall_tau, df = TL_data),
+  ValueFL = sapply(MT_vars, kendall_tau, df = FL_data)
 )
+print(data)
 
-# Load the ggplot2 package
-library(ggplot2)
-
-# Create the plot with the specified color gradient
-ggplot(data, aes(x = MT, y = ValueTL, color = as.numeric(MT))) +  # Map color to the numeric value of MT
-  geom_point(size = 5) +  # Adjust size of points for better visibility
-  geom_line(aes(group = 1),  size = 1.2) +
-  geom_smooth(method = "lm",
-              se = FALSE,
-              color = "blue") +
+Fig4 <- ggplot(data, aes(x = MT, color = as.numeric(MT), group = 1)) +
+  geom_line(aes(y = ValueTL), linewidth = 1.2) +
+  geom_point(aes(y = ValueTL), size = 5) +
+  geom_line(aes(y = ValueFL), linewidth = 1.2) +
+  geom_point(aes(y = ValueFL), size = 4) +
+  scale_color_gradient(low = "blue", high = "red") +  # Gradient from blue to red
+  scale_y_continuous(breaks = seq(-0.05, 0.3, by = 0.05),
+                     expand = c(0.02, 0.02)) +
+  scale_x_discrete(
+    labels = paste0(c("0", "5", "5.5", "6", "6.5", "7", "7.5"), "°C")
+  ) +
   labs(
     title = NULL,
-    x = "Difference in growing season length [between first and last TFL record] with mean temperature",
-    y = "Kendall's rank correlation coefficient (\u03C4)",
+    x = "Difference in growing season length with mean temperature above",
+    y = "Kendall's rank correlation coefficient (τ)",
     color = NULL
   ) +
-  scale_color_gradient(low = "blue", high = "red") +  # Gradient from blue to red
-  scale_y_continuous(breaks = seq(0, 0.3, by = 0.05),
-                     expand = c(0.02, 0.02)) +  # Adjust space and add more breaks
   theme_bw() +
   theme(
     legend.position = "none",
     axis.text = element_text(size = 12),
     axis.title.y = element_text(size = 12),
-    axis.title.x = element_text(size = 12),
-    strip.text = element_text(size = 12)
+    axis.title.x = element_text(size = 12)
   ) +
-  scale_x_discrete(
-    labels = expression(
-      "0" * degree * "C",
-      "5" * degree * "C",
-      "5.5" * degree * "C",
-      "6" * degree * "C",
-      "6.5" * degree * "C",
-      "7" * degree * "C",
-      "7.5" * degree * "C",
-      "10" * degree * "C"
-    )
-  ) +
-  geom_point(aes(y = ValueFL, color = as.numeric(MT), size = 5)) +
-  geom_line(aes(y = ValueFL, color = as.numeric(MT), group = 1), size = 1.2) +
-  geom_smooth(aes(y = ValueFL, color = as.numeric(MT),
-                  method = "lm",
-                  se = FALSE,
-                  size = 1.2)) +
-  annotate(
-    "text",
-    x = 1.2,
-    y = 0.13,
-    label = "Treeline change",
-    size = 5,
-    color = "black",
-    fontface = "bold") +
-  annotate(
-    "text",
-    x = 1.2,
-    y = 0.04,
-    label = "Forest line change",
-    size = 5,
-    color = "black",
-    fontface = "bold")
-#+
-#  annotate(
-#      "text",
-#      x = 1.8,
-#      y = -0.04,
-#      label = "Growing season length with mean temperature",
-#      size = 5,
-#      color = "black")
-
+  annotate("text", x = 1.2, y = data$ValueTL[1] + 0.017,
+           label = "Treeline change", size = 5, color = "black", fontface = "bold") +
+  annotate("text", x = 1.2, y = data$ValueFL[1] + 0.06,
+           label = "Forest line change", size = 5, color = "black", fontface = "bold")
+Fig4
 
 
 ## Incident plot #---------------------------------------------------------------
@@ -972,7 +938,8 @@ head(TL_modeling_df)  # Display the first few rows to check the new column
 
 
 # Assuming 'Nr' is a column in TL_modeling_df containing row numbers
-Fig_4a <- ggplot(TL_modeling_df, aes(x = MT6.5, y = REG_alt)) +
+# (exploratory; named Fig_incident so it does not overwrite panel A of Fig. 5)
+Fig_incident <- ggplot(TL_modeling_df, aes(x = MT6.5, y = REG_alt)) +
   geom_point(
     aes(
       x = MT6.5,
@@ -1063,28 +1030,39 @@ library(ggpubr)
 #          labels = "")
 
 
-ggarrange(Fig_4a, Fig_4b, Fig_4c, Fig_4d,
-          ncol = 2, nrow = 2, 
+Fig5 <- ggarrange(Fig_4a, Fig_4b, Fig_4c, Fig_4d,
+          ncol = 2, nrow = 2,
           common.legend = T, legend = "bottom",
           font.label = list(face = "bold", color = "black"),
           labels = c("A", "B", "C", "D"))
 
 
-# Saving gridded plots
+# Saving gridded plots (Fig. 5)
 ggsave(
   "output/figures/Fig5abcd.pdf",
-  plot = last_plot(),
+  plot = Fig5,
   width = 210, height = 297,
   units = "mm",
   device = cairo_pdf)
+ggsave(
+  "output/figures/Fig5abcd.png",
+  plot = Fig5,
+  width = 210, height = 297,
+  units = "mm",
+  dpi = 300, device = ragg::agg_png, bg = "white")
 
 
-# Saving MT6.5 plots
-ggsave("output/figures/Fig4.pdf", 
-       plot = last_plot(), 
-       width = 297, height = 210, 
+# Saving Fig. 4 (tau of growing-season variables)
+ggsave("output/figures/Fig4.pdf",
+       plot = Fig4,
+       width = 240, height = 170,
        units = "mm",
        device = cairo_pdf)
+ggsave("output/figures/Fig4.png",
+       plot = Fig4,
+       width = 240, height = 170,
+       units = "mm",
+       dpi = 300, device = ragg::agg_png, bg = "white")
 
 
 
@@ -1102,6 +1080,11 @@ ggsave("output/figures/Appendix_Dist_SDF_TL.pdf",
        width = 297, height = 210, 
        units = "mm",
        device = cairo_pdf)
+ggsave("output/figures/Appendix_Dist_SDF_TL.png", 
+       plot = last_plot(), 
+       width = 297, height = 210, 
+       units = "mm",
+       dpi = 300, device = ragg::agg_png, bg = "white")
 
 #******************************************************************************
 # SAVEING PLOTS end ###

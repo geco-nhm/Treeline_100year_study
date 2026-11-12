@@ -2,6 +2,7 @@ cff-version: 1.2.0
 message: "If you use this data or code, please cite the article below."
 title: "Tales from the past: remapping dynamic tree- and forest lines – data and code"
 repository-code: "https://github.com/geco-nhm/Treeline_100year_study"
+license: CC-BY-4.0
 authors:
   - {family-names: Tjessem, given-names: Ingrid Vesterdal}
   - {family-names: Horvath, given-names: Peter}

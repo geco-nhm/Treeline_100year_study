@@ -376,23 +376,23 @@ summary(model_TLs_1g)                               # p = 0.0018 **
 
 
 model_TLs_2a<-lm(REG_alt ~ MT6.5 + ATD, data = TL_modeling_df)
-anova(model_TLs_0, model_TLs_1a, model_TLs_2a, test = "F")  # p = 0.05692 .
-summary(model_TLs_2a)                                       # p = 0.05692 .
+anova(model_TLs_0, model_TLs_1a, model_TLs_2a, test = "F")  # p = 0.0202
+summary(model_TLs_2a)                                       # p = 0.0202
 
 
 model_TLs_2b<-lm(REG_alt ~ MT6.5 + WQ, data = TL_modeling_df)
-anova(model_TLs_0, model_TLs_1a, model_TLs_2b, test = "F")  # p = 0.8753 
-summary(model_TLs_2b)                                       # p = 0.875343
+anova(model_TLs_0, model_TLs_1a, model_TLs_2b, test = "F")  # p = 0.8803
+summary(model_TLs_2b)                                       # p = 0.8803
 
 
 model_TLs_2c<-lm(REG_alt ~ MT6.5 + MT7, data = TL_modeling_df)
-anova(model_TLs_0, model_TLs_1a, model_TLs_2c, test = "F")  # p = 0.4874
-summary(model_TLs_2c)                                       # p = 0.48739    
+anova(model_TLs_0, model_TLs_1a, model_TLs_2c, test = "F")  # p = 0.4025
+summary(model_TLs_2c)                                       # p = 0.4025
 
 
-model_TLs_2c<-lm(REG_alt ~ MT6.5 + MT5.5, data = TL_modeling_df)
-anova(model_TLs_0, model_TLs_1a, model_TLs_2c, test = "F")  # p = 0.2866 
-summary(model_TLs_2c)                                       # p = 0.286622    
+model_TLs_2d<-lm(REG_alt ~ MT6.5 + MT5.5, data = TL_modeling_df)
+anova(model_TLs_0, model_TLs_1a, model_TLs_2d, test = "F")  # p = 0.1901
+summary(model_TLs_2d)                                       # p = 0.1901
 
 
 #______________________________________________________________________________
@@ -689,7 +689,7 @@ PE_4
 
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
-cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "DistToSummit", prediction_error = PE_Sum)
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "DistToSummit (exploratory)", prediction_error = PE_Sum)
 PE_Sum  #  5107.901
 
 
@@ -739,7 +739,7 @@ PE_4
 
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
-cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "MT6.5", prediction_error = PE_Sum)
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "MT6.5 (final)", prediction_error = PE_Sum)
 PE_Sum  #  5701.148
 
 
@@ -747,13 +747,13 @@ PE_Sum  #  5701.148
 
 #We calculate prediction errors for each k-fold prediction and compares it to the evaluation subset
 k1 <- lm(REG_alt[xv == 2 | xv == 3 | xv == 4] ~ 
-           DistToSummit[xv == 2 | xv == 3 | xv == 4] + 
+           MT6.5[xv == 2 | xv == 3 | xv == 4] + 
            ATD[xv == 2 | xv == 3 | xv == 4], 
          data = TL_modeling_df)
 
 # which corresponds to an estimate of REG_alt given by
-REG_alt.Predict.1 <- summary(k1)$coefficients[1] + (summary(k1)$coefficients[2] * TL_modeling_df$DistToSummit[xv == 1]) + (summary(k1)$coefficients[3] * TL_modeling_df$ATD[xv == 1])
-REG_alt.Predict.1  #-9.47035
+REG_alt.Predict.1 <- summary(k1)$coefficients[1] + (summary(k1)$coefficients[2] * TL_modeling_df$MT6.5[xv == 1]) + (summary(k1)$coefficients[3] * TL_modeling_df$ATD[xv == 1])
+REG_alt.Predict.1
 
 #Calculate prediction error for xv==1:
 PE_1 <- TL_modeling_df$REG_alt[xv == 1] - REG_alt.Predict.1
@@ -763,38 +763,38 @@ PE_1
 #Repeat for the rest of the k-folds:
 k2 <-
   lm(REG_alt[xv == 1 | xv == 3 | xv == 4] ~ 
-       DistToSummit[xv == 1 | xv == 3 | xv == 4] + 
+       MT6.5[xv == 1 | xv == 3 | xv == 4] + 
        ATD[xv == 1 | xv == 3 | xv == 4], 
      data = TL_modeling_df)
-REG_alt.Predict.2 <- summary(k2)$coefficients[1] + (summary(k2)$coefficients[2] * TL_modeling_df$DistToSummit[xv == 2]) + (summary(k2)$coefficients[3] * TL_modeling_df$ATD[xv == 2])
+REG_alt.Predict.2 <- summary(k2)$coefficients[1] + (summary(k2)$coefficients[2] * TL_modeling_df$MT6.5[xv == 2]) + (summary(k2)$coefficients[3] * TL_modeling_df$ATD[xv == 2])
 PE_2 <- TL_modeling_df$REG_alt[xv == 2] - REG_alt.Predict.2
 PE_2
 
 
 k3 <-
   lm(REG_alt[xv == 1 | xv == 2 | xv == 4] ~ 
-       DistToSummit[xv == 1 | xv == 2 | xv == 4] + 
+       MT6.5[xv == 1 | xv == 2 | xv == 4] + 
        ATD[xv == 1 | xv == 2 | xv == 4], 
      data = TL_modeling_df)
-REG_alt.Predict.3 <- summary(k3)$coefficients[1] + (summary(k3)$coefficients[2] * TL_modeling_df$DistToSummit[xv == 3]) + (summary(k3)$coefficients[3] * TL_modeling_df$ATD[xv == 3])
+REG_alt.Predict.3 <- summary(k3)$coefficients[1] + (summary(k3)$coefficients[2] * TL_modeling_df$MT6.5[xv == 3]) + (summary(k3)$coefficients[3] * TL_modeling_df$ATD[xv == 3])
 PE_3 <- TL_modeling_df$REG_alt[xv == 3] - REG_alt.Predict.3
 PE_3
 
 
 k4 <-
   lm(REG_alt[xv == 1 | xv == 2 | xv == 3] ~ 
-       DistToSummit[xv == 1 | xv == 2 | xv == 3] + 
+       MT6.5[xv == 1 | xv == 2 | xv == 3] + 
        ATD[xv == 1 | xv == 2 | xv == 3], 
      data = TL_modeling_df)
-REG_alt.Predict.4 <- summary(k4)$coefficients[1] + (summary(k4)$coefficients[2] * TL_modeling_df$DistToSummit[xv == 4]) + (summary(k4)$coefficients[3] * TL_modeling_df$ATD[xv == 4])
+REG_alt.Predict.4 <- summary(k4)$coefficients[1] + (summary(k4)$coefficients[2] * TL_modeling_df$MT6.5[xv == 4]) + (summary(k4)$coefficients[3] * TL_modeling_df$ATD[xv == 4])
 PE_4 <- TL_modeling_df$REG_alt[xv == 4] - REG_alt.Predict.4
 PE_4
 
 
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
-cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "MT6.5 + ATD", prediction_error = PE_Sum)
-PE_Sum  # 4917.583
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "MT6.5 + ATD (alternative)", prediction_error = PE_Sum)
+PE_Sum  # 5642.726
 
 
 
@@ -900,7 +900,7 @@ PE_4
 
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
-cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "DistToSummit", prediction_error = PE_Sum)
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "DistToSummit (exploratory)", prediction_error = PE_Sum)
 PE_Sum  #  3613.888
 
 
@@ -950,21 +950,22 @@ PE_4
 
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
-cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "MT6.5", prediction_error = PE_Sum)
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "MT6.5 (final)", prediction_error = PE_Sum)
 PE_Sum  #  4044.945
 
 
-###### MT6.5 and MT5.5 (best predictor round 2) model #####--------------------------------------------------------
+###### MT6.5 and CQ (best predictor round 2) model #####--------------------------------------------------------
+# (MT6.5 + MT5.5, p = 0.0218 in round 2, gives 4040.951)
 
 #We calculate prediction errors for each k-fold prediction and compares it to the evaluation subset
 k1 <- lm(REG_alt[xv1 == 2 | xv1 == 3 | xv1 == 4] ~ 
            MT6.5[xv1 == 2 | xv1 == 3 | xv1 == 4] + 
-           MT5.5[xv1 == 2 | xv1 == 3 | xv1 == 4], 
+           CQ[xv1 == 2 | xv1 == 3 | xv1 == 4], 
      data = TL_Ascending_modeling_df)
 
 # which corresponds to an estimate of REG_alt given by
-REG_alt.Predict.1 <- summary(k1)$coefficients[1] + (summary(k1)$coefficients[2] * TL_Ascending_modeling_df$MT6.5[xv1 == 1]) + (summary(k1)$coefficients[3] * TL_Ascending_modeling_df$MT5.5[xv1 == 1])
-REG_alt.Predict.1  #-9.47035
+REG_alt.Predict.1 <- summary(k1)$coefficients[1] + (summary(k1)$coefficients[2] * TL_Ascending_modeling_df$MT6.5[xv1 == 1]) + (summary(k1)$coefficients[3] * TL_Ascending_modeling_df$CQ[xv1 == 1])
+REG_alt.Predict.1
 
 #Calculate prediction error for xv1==1:
 PE_1 <- TL_Ascending_modeling_df$REG_alt[xv1 == 1] - REG_alt.Predict.1
@@ -975,9 +976,9 @@ PE_1
 k2 <-
   lm(REG_alt[xv1 == 1 | xv1 == 3 | xv1 == 4] ~ 
        MT6.5[xv1 == 1 | xv1 == 3 | xv1 == 4] + 
-       MT5.5[xv1 == 1 | xv1 == 3 | xv1 == 4], 
+       CQ[xv1 == 1 | xv1 == 3 | xv1 == 4], 
      data = TL_Ascending_modeling_df)
-REG_alt.Predict.2 <- summary(k2)$coefficients[1] + (summary(k2)$coefficients[2] * TL_Ascending_modeling_df$MT6.5[xv1 == 2]) + (summary(k2)$coefficients[3] * TL_Ascending_modeling_df$MT5.5[xv1 == 2])
+REG_alt.Predict.2 <- summary(k2)$coefficients[1] + (summary(k2)$coefficients[2] * TL_Ascending_modeling_df$MT6.5[xv1 == 2]) + (summary(k2)$coefficients[3] * TL_Ascending_modeling_df$CQ[xv1 == 2])
 PE_2 <- TL_Ascending_modeling_df$REG_alt[xv1 == 2] - REG_alt.Predict.2
 PE_2
 
@@ -985,9 +986,9 @@ PE_2
 k3 <-
   lm(REG_alt[xv1 == 1 | xv1 == 2 | xv1 == 4] ~ 
        MT6.5[xv1 == 1 | xv1 == 2 | xv1 == 4] + 
-       MT5.5[xv1 == 1 | xv1 == 2 | xv1 == 4], 
+       CQ[xv1 == 1 | xv1 == 2 | xv1 == 4], 
      data = TL_Ascending_modeling_df)
-REG_alt.Predict.3 <- summary(k3)$coefficients[1] + (summary(k3)$coefficients[2] * TL_Ascending_modeling_df$MT6.5[xv1 == 3]) + (summary(k3)$coefficients[3] * TL_Ascending_modeling_df$MT5.5[xv1 == 3])
+REG_alt.Predict.3 <- summary(k3)$coefficients[1] + (summary(k3)$coefficients[2] * TL_Ascending_modeling_df$MT6.5[xv1 == 3]) + (summary(k3)$coefficients[3] * TL_Ascending_modeling_df$CQ[xv1 == 3])
 PE_3 <- TL_Ascending_modeling_df$REG_alt[xv1 == 3] - REG_alt.Predict.3
 PE_3
 
@@ -995,17 +996,17 @@ PE_3
 k4 <-
   lm(REG_alt[xv1 == 1 | xv1 == 2 | xv1 == 3] ~ 
        MT6.5[xv1 == 1 | xv1 == 2 | xv1 == 3] + 
-       MT5.5[xv1 == 1 | xv1 == 2 | xv1 == 3], 
+       CQ[xv1 == 1 | xv1 == 2 | xv1 == 3], 
      data = TL_Ascending_modeling_df)
-REG_alt.Predict.4 <- summary(k4)$coefficients[1] + (summary(k4)$coefficients[2] * TL_Ascending_modeling_df$MT6.5[xv1 == 4]) + (summary(k4)$coefficients[3] * TL_Ascending_modeling_df$MT5.5[xv1 == 4])
+REG_alt.Predict.4 <- summary(k4)$coefficients[1] + (summary(k4)$coefficients[2] * TL_Ascending_modeling_df$MT6.5[xv1 == 4]) + (summary(k4)$coefficients[3] * TL_Ascending_modeling_df$CQ[xv1 == 4])
 PE_4 <- TL_Ascending_modeling_df$REG_alt[xv1 == 4] - REG_alt.Predict.4
 PE_4
 
 
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
-cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "MT6.5 + MT5.5", prediction_error = PE_Sum)
-PE_Sum  # 3532.437
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "MT6.5 + CQ (alternative)", prediction_error = PE_Sum)
+PE_Sum  # 4092.455
 
 
 ##### FLs #####-------------------------------------------------------
@@ -1110,7 +1111,7 @@ PE_4
 
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
-cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_change", model = "DistToSummit", prediction_error = PE_Sum)
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_change", model = "DistToSummit (exploratory)", prediction_error = PE_Sum)
 PE_Sum  #  4076.674
 
 
@@ -1266,7 +1267,7 @@ PE_4
 
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
-cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_advance", model = "DistToSummit", prediction_error = PE_Sum)
+cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_advance", model = "DistToSummit (exploratory)", prediction_error = PE_Sum)
 PE_Sum  #  4076.674
 
 

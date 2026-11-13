@@ -421,8 +421,8 @@ summary(model_FLs_0)
 
 
 model_FLs_1a<-lm(REG_alt ~ Dist_SDF, data = FL_modeling_df)
-anova(model_FLs_0, model_FLs_1a, test = "F")        # p = 0.004455 **
-summary(model_FLs_1a)                               # p = 0.00446 **
+anova(model_FLs_0, model_FLs_1a, test = "F")        # p = 0.004351 **
+summary(model_FLs_1a)                               # p = 0.00435 **
 # Significant!
 
 #______________________________________________________________________________
@@ -563,8 +563,8 @@ summary(model_AFLs_0)                          # p = <2e-16 ***
 
 
 model_AFLs_1a<-lm(REG_alt ~ Aspect_favour, data = FL_Ascending_modeling_df)
-anova(model_AFLs_0, model_AFLs_1a, test = "F")        # p = 0.03169 *
-summary(model_AFLs_1a)                                # p = 0.0317 *  
+anova(model_AFLs_0, model_AFLs_1a, test = "F")        # p = 0.02826 *
+summary(model_AFLs_1a)                                # p = 0.0283 *  
 # Significant!
 
 
@@ -1062,7 +1062,7 @@ PE_NULL_4
 #Calculate total prediction error:
 PE_NULL_Sum <- sum(abs(c(PE_NULL_1, PE_NULL_2, PE_NULL_3, PE_NULL_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_change", model = "Null", prediction_error = PE_NULL_Sum)
-PE_NULL_Sum  # 4334.452
+PE_NULL_Sum  # 4359.322
 
 
 ###### DistToSummit FLs #####-----------------------------------
@@ -1112,7 +1112,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_change", model = "DistToSummit (exploratory)", prediction_error = PE_Sum)
-PE_Sum  # 4072.674
+PE_Sum  # 4139.369
 
 
 ###### Final model #####--------------------------------------------------------
@@ -1162,7 +1162,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_change", model = "Dist_SDF (final)", prediction_error = PE_Sum)
-PE_Sum  # 4159.190
+PE_Sum  # 4266.601
 
 
 ##### Ascending FLs #####-----------------------------------------------------
@@ -1218,7 +1218,7 @@ PE_NULL_4
 #Calculate total prediction error:
 PE_NULL_Sum <- sum(abs(c(PE_NULL_1, PE_NULL_2, PE_NULL_3, PE_NULL_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_advance", model = "Null", prediction_error = PE_NULL_Sum)
-PE_NULL_Sum  # 2321.951
+PE_NULL_Sum  # 2333.733
 
 
 ###### Distance to summit Ascending FLs #####-----------------------------------
@@ -1268,7 +1268,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_advance", model = "DistToSummit (exploratory)", prediction_error = PE_Sum)
-PE_Sum  # 2277.720
+PE_Sum  # 2343.865
 
 
 ###### Final model #####--------------------------------------------------------
@@ -1318,7 +1318,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_advance", model = "Aspect_favour (final)", prediction_error = PE_Sum)
-PE_Sum  # 2212.280
+PE_Sum  # 2235.049
 
 
 

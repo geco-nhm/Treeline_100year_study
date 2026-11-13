@@ -1,10 +1,12 @@
 # Tales from the past: remapping dynamic tree- and forest lines
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24155131.svg)](https://doi.org/10.5281/zenodo.24155131)
+
 Data and code for:
 
 > Tjessem, I. V., Horvath, P., Naas, A. E., Halvorsen, R., Potthoff, K., Isaksen, K., Tveito, O. E., Berntsen, T. K., Mienna, I. M., and Bryn, A.: Tales from the past: remapping dynamic tree- and forest lines in response to changing climate and current land use, EGUsphere, egusphere-2026-2717, 2026.
 
-The study remaps historical tree- and forest line (TFL) records of mountain birch (*Betula pubescens* ssp. *czerepanovii*) in Norway, first recorded 1887–1969 and revisited 2016–2019. It relates the change in TFL elevation to climate change (20-year means before each record) and land use (grazing pressure, proximity to mountain summer farms).
+The study remaps historical tree- and forest line (TFL) records of mountain birch (*Betula pubescens* ssp. *czerepanovii*) in Norway, first recorded 1887–1967 and remapped in the field (latest records 2013–2023). It relates the change in TFL elevation to climate change (20-year means before each record) and land use (grazing pressure, proximity to mountain summer farms).
 
 Corresponding author: Ingrid Vesterdal Tjessem (i.v.tjessem@nhm.uio.no)
 
@@ -43,7 +45,7 @@ python src/compile_climate_data.py   # input/climate_data_csv -> output/climate_
 python src/calculate_time_lag.py     # -> output/matched_climate_data.csv, output/unmatched_climate_data.csv
 ```
 
-For each record in year *Y*, `calculate_time_lag.py` averages the climate over *Y*−20 ≤ year < *Y*. The climate series start in 1868, so records from 1887 get a 19-year window. Eleven sites have no climate data (listed in `unmatched_climate_data.csv`).
+For each record in year *Y*, `calculate_time_lag.py` averages the climate over *Y*−20 ≤ year < *Y*. The climate series start in 1868, so records from 1887 get a 19-year window. Ten sites have no climate data (listed in `unmatched_climate_data.csv`): the sites remapped in 2023, which are not covered by the climate series (these end in 2019).
 
 ### 2. Statistical analysis (R ≥ 4.3)
 
@@ -106,19 +108,28 @@ In the R scripts, hyphens in names become dots (`M-JJAS` → `M.JJAS`).
 
 ## Data sources
 
-- **TFL records:** historical records by B. Aas, Hanna Resvoll-Holmsen, Johannes M. Normann, Søren Ve and others, remapped in the field 2016–2019 (this study).
+- **TFL records:** historical records by B. Aas, Hanna Resvoll-Holmsen, Johannes M. Normann, Søren Ve and others, remapped in the field (latest records 2013–2023; this study).
 - **Climate:** derived from observation-based 1 × 1 km gridded monthly temperature and precipitation for Norway and long-term station records, Norwegian Meteorological Institute (MET Norway). See the paper for details.
 - **Grazing:** livestock numbers per municipality from the Norwegian Agriculture Agency (2003–2019) and historical agricultural censuses (Statistics Norway and its precursor, 1891–1969).
 
+## How to cite
+
+Please cite the article above and this archive:
+
+> Tjessem, I. V., Horvath, P., Naas, A. E., Halvorsen, R., Potthoff, K., Isaksen, K., Tveito, O. E., Berntsen, T. K., Mienna, I. M., and Bryn, A.: Tales from the past: remapping dynamic tree- and forest lines – data and code, Zenodo [code and data set], <https://doi.org/10.5281/zenodo.24155131>, 2026.
+
+This DOI always resolves to the latest version; each release also has its own version DOI (v0.2: <https://doi.org/10.5281/zenodo.24200382>). Citation metadata are in `CITATION.cff`.
+
 ## Licence
 
-To be added.
+The data and code are licensed under the [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/); see `LICENSE`.
 
 ## Change log
 
 - **Release for the paper:**
   - Corrected a column shift in the climate data of site `30Årb_T_S_H`. An encoding error had placed every value one column to the left.
   - Restored the climate data of forest-line sites `19Aub_F_W_V` and `19Veb_F_SE_V`, which were dropped because their IDs were spelled differently.
+  - Corrected the name of climate series 69 in `input/climate_data_csv/69.csv` and `sites_mapping.csv`: it belongs to forest line `15Rau_F_E_B` (Lom), as in MET's site list, but had been renamed `9Grå_F_SE_B` (Dovre). As a result, `15Rau_F_E_B` had no climate data and `9Grå_F_SE_B` was given the mean of both series. (Changed after release v0.2.)
   - Corrected the summation of cross-validation errors.
   - Cross-validation of the alternative models (final model plus the best predictor from the second selection step): for TL change the code fitted distance to summit + ATD instead of MT6.5 + ATD; for TL advance the best second predictor with the corrected data is CQ (previously MT5.5). The distance-to-summit models in `TableD1_crossvalidation.csv` are exploratory and not reported in the paper. (Changed after release v0.1.)
   - Figure 4 is now computed from the data (it previously plotted hard-coded, outdated values) and saved as `output/figures/Fig4.*`; panel A of Figure 5 is no longer overwritten by an exploratory plot.

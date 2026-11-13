@@ -16,6 +16,10 @@ __pycache__/
 egusphere-2026-2717.pdf
 Manuscript*.pdf
 
+# Personal release checklist and error notes (kept locally only)
+RELEASE_TODO.md
+ERRORS_FOUND.md
+
 # Co-author working copies used to verify reproduction (contain personal paths)
 input/ingrid_rebuild/
 input/ingrid_rebuild2/

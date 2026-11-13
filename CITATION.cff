@@ -1,25 +1,67 @@
 cff-version: 1.2.0
-message: "If you use this data or code, please cite the article below."
+message: "If you use this data or code, please cite the article below and this archive."
 title: "Tales from the past: remapping dynamic tree- and forest lines – data and code"
+version: "v0.2"
+date-released: "2026-11-13"
+doi: "10.5281/zenodo.24155131"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.24155131"
+    description: "Concept DOI (all versions; resolves to the latest)"
+  - type: doi
+    value: "10.5281/zenodo.24200382"
+    description: "Version v0.2, cited in the revised manuscript"
 repository-code: "https://github.com/geco-nhm/Treeline_100year_study"
 license: CC-BY-4.0
+keywords:
+  - treeline
+  - forest line
+  - mountain birch
+  - Betula pubescens
+  - climate change
+  - land use
+  - grazing
+  - Norway
+  - resurvey
 authors:
-  - {family-names: Tjessem, given-names: Ingrid Vesterdal}
-  - {family-names: Horvath, given-names: Peter}
-  - {family-names: Naas, given-names: Adam Eindride}
-  - {family-names: Halvorsen, given-names: Rune}
-  - {family-names: Potthoff, given-names: Kerstin}
-  - {family-names: Isaksen, given-names: Ketil}
-  - {family-names: Tveito, given-names: Ole Einar}
-  - {family-names: Berntsen, given-names: Terje Koren}
-  - {family-names: Mienna, given-names: Ida Marielle}
-  - {family-names: Bryn, given-names: Anders}
+  - family-names: Tjessem
+    given-names: Ingrid Vesterdal
+    affiliation: "Natural History Museum, University of Oslo"
+  - family-names: Horvath
+    given-names: Peter
+    affiliation: "Natural History Museum, University of Oslo"
+  - family-names: Naas
+    given-names: Adam Eindride
+    affiliation: "Natural History Museum, University of Oslo"
+  - family-names: Halvorsen
+    given-names: Rune
+    affiliation: "Natural History Museum, University of Oslo"
+  - family-names: Potthoff
+    given-names: Kerstin
+    affiliation: "Department of Landscape Architecture, Norwegian University of Life Sciences"
+  - family-names: Isaksen
+    given-names: Ketil
+    affiliation: "Climate and Environment Department, Norwegian Meteorological Institute"
+  - family-names: Tveito
+    given-names: Ole Einar
+    affiliation: "Climate and Environment Department, Norwegian Meteorological Institute"
+  - family-names: Berntsen
+    given-names: Terje Koren
+    affiliation: "Department of Geosciences, University of Oslo"
+  - family-names: Mienna
+    given-names: Ida Marielle
+    affiliation: "Norwegian Institute of Nature Research"
+  - family-names: Bryn
+    given-names: Anders
+    affiliation: "Natural History Museum, University of Oslo; Norwegian Institute of Bioeconomy Research"
 preferred-citation:
   type: article
   title: "Tales from the past: remapping dynamic tree- and forest lines in response to changing climate and current land use"
   journal: "EGUsphere"
   year: 2026
-  notes: "Preprint egusphere-2026-2717"
+  doi: "10.5194/egusphere-2026-2717"
+  url: "https://egusphere.copernicus.org/preprints/2026/egusphere-2026-2717/"
+  notes: "Preprint, under review in Biogeosciences"
   authors:
     - {family-names: Tjessem, given-names: Ingrid Vesterdal}
     - {family-names: Horvath, given-names: Peter}

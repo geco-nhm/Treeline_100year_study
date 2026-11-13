@@ -318,8 +318,8 @@ summary(model_TLs_0)
 #______________________________________________________________________________
 
 model_TLs_1a <- lm(REG_alt ~ MT6.5, data = TL_modeling_df)
-anova(model_TLs_0, model_TLs_1a, test = "F")        # p = 2.994e-06 ***
-summary(model_TLs_1a)                               # p = 2.99e-06 ***
+anova(model_TLs_0, model_TLs_1a, test = "F")        # p = 1.54e-05 ***
+summary(model_TLs_1a)                               # p = 1.54e-05 ***
 # Significant!
 
 
@@ -329,31 +329,31 @@ summary(model_TLs_1b)                               # p = 0.0122 *
 
 
 model_TLs_1c <- lm(REG_alt ~ ATD, data = TL_modeling_df)
-anova(model_TLs_0, model_TLs_1c, test = "F")        # p = 9.204e-05 ***
-summary(model_TLs_1c)                               # p = 9.2e-05 ***
+anova(model_TLs_0, model_TLs_1c, test = "F")        # p = 4.147e-05 ***
+summary(model_TLs_1c)                               # p = 4.15e-05 ***
 # Significant!
 
 
 model_TLs_1d <- lm(REG_alt ~ WQ, data = TL_modeling_df)
-anova(model_TLs_0, model_TLs_1d, test="F")          # p = 0.002707 **
-summary(model_TLs_1d)                               # p = 0.00271 **
+anova(model_TLs_0, model_TLs_1d, test="F")          # p = 0.006099 **
+summary(model_TLs_1d)                               # p = 0.0061 **
 # Significant!
 
 
 model_TLs_1e <- lm(REG_alt ~ MT7, data = TL_modeling_df)
-anova(model_TLs_0, model_TLs_1e, test = "F")        # p = 0.000334 ***
-summary(model_TLs_1e)                               # p = 0.000334 ***
+anova(model_TLs_0, model_TLs_1e, test = "F")        # p = 0.0005775 ***
+summary(model_TLs_1e)                               # p = 0.000578 ***
 # Significant!
 
 
 model_TLs_1f <- lm(REG_alt ~ MT6, data = TL_modeling_df)
-anova(model_TLs_0, model_TLs_1f, test = "F")        # p = 0.01706 *
-summary(model_TLs_1f)                               # p = 0.0171 * 
+anova(model_TLs_0, model_TLs_1f, test = "F")        # p = 0.01016 *
+summary(model_TLs_1f)                               # p = 0.0102 * 
 
 
 model_TLs_1g <- lm(REG_alt ~ MT5.5, data = TL_modeling_df)
-anova(model_TLs_0, model_TLs_1g, test="F")          # p = 0.001802 **
-summary(model_TLs_1g)                               # p = 0.0018 ** 
+anova(model_TLs_0, model_TLs_1g, test="F")          # p = 0.001576 **
+summary(model_TLs_1g)                               # p = 0.00158 ** 
 # Significant!
 
 
@@ -421,8 +421,8 @@ summary(model_FLs_0)
 
 
 model_FLs_1a<-lm(REG_alt ~ Dist_SDF, data = FL_modeling_df)
-anova(model_FLs_0, model_FLs_1a, test = "F")        # p = 0.002877 **
-summary(model_FLs_1a)                               # p = 0.00288 **
+anova(model_FLs_0, model_FLs_1a, test = "F")        # p = 0.004455 **
+summary(model_FLs_1a)                               # p = 0.00446 **
 # Significant!
 
 #______________________________________________________________________________
@@ -563,8 +563,8 @@ summary(model_AFLs_0)                          # p = <2e-16 ***
 
 
 model_AFLs_1a<-lm(REG_alt ~ Aspect_favour, data = FL_Ascending_modeling_df)
-anova(model_AFLs_0, model_AFLs_1a, test = "F")        # p = 0.02423 *
-summary(model_AFLs_1a)                                # p = 0.0242 *  
+anova(model_AFLs_0, model_AFLs_1a, test = "F")        # p = 0.03169 *
+summary(model_AFLs_1a)                                # p = 0.0317 *  
 # Significant!
 
 
@@ -605,7 +605,7 @@ summary(k1_NULL)$coefficients[1]  #Intercept = 69.1828
 
 # which corresponds to an estimate of REG_alt given by
 REG_alt.Predict_NULL.1 <- summary(k1_NULL)$coefficients[1]
-REG_alt.Predict_NULL.1  #69.1828
+REG_alt.Predict_NULL.1
 
 #Calculate prediction error for xv==1:
 PE_NULL_1 <- TL_modeling_df$REG_alt[xv == 1] - REG_alt.Predict_NULL.1
@@ -690,7 +690,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "DistToSummit (exploratory)", prediction_error = PE_Sum)
-PE_Sum  #  5107.901
+PE_Sum  # 5107.901
 
 
 ###### MT6.5 model TLs #####------------------------------------------
@@ -740,7 +740,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_change", model = "MT6.5 (final)", prediction_error = PE_Sum)
-PE_Sum  #  5701.148
+PE_Sum  # 5719.284
 
 
 ######  MT6.5 and ATD (best predictor round 2) model #####--------------------------------------------------------
@@ -816,7 +816,7 @@ summary(k1_NULL)$coefficients[1]  #Intercept = 86.02817
 
 # which corresponds to an estimate of REG_alt given by
 REG_alt.Predict_NULL.1 <- summary(k1_NULL)$coefficients[1]
-REG_alt.Predict_NULL.1  #86.02817
+REG_alt.Predict_NULL.1
 
 #Calculate prediction error for xv1==1:
 PE_NULL_1 <- TL_Ascending_modeling_df$REG_alt[xv1 == 1] - REG_alt.Predict_NULL.1
@@ -851,7 +851,7 @@ PE_NULL_4
 #Calculate total prediction error:
 PE_NULL_Sum <- sum(abs(c(PE_NULL_1, PE_NULL_2, PE_NULL_3, PE_NULL_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "Null", prediction_error = PE_NULL_Sum)
-PE_NULL_Sum  # 4278.539
+PE_NULL_Sum  # 4209.115
 
 
 ###### DistToSummit model ascending TLs #####-----------------------------------
@@ -901,7 +901,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "DistToSummit (exploratory)", prediction_error = PE_Sum)
-PE_Sum  #  3613.888
+PE_Sum  # 3632.742
 
 
 ###### MT6.5 model ascending TLs #####------------------------------------------
@@ -951,7 +951,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "TL_advance", model = "MT6.5 (final)", prediction_error = PE_Sum)
-PE_Sum  #  4044.945
+PE_Sum  # 4229.146
 
 
 ###### MT6.5 and CQ (best predictor round 2) model #####--------------------------------------------------------
@@ -1027,7 +1027,7 @@ summary(k1_NULL)$coefficients[1]  #Intercept = 40.51087
 
 # which corresponds to an estimate of REG_alt given by
 REG_alt.Predict_NULL.1 <- summary(k1_NULL)$coefficients[1]
-REG_alt.Predict_NULL.1  #40.51087
+REG_alt.Predict_NULL.1
 
 #Calculate prediction error for xv2==1:
 PE_NULL_1 <- FL_modeling_df$REG_alt[xv2 == 1] - REG_alt.Predict_NULL.1
@@ -1062,7 +1062,7 @@ PE_NULL_4
 #Calculate total prediction error:
 PE_NULL_Sum <- sum(abs(c(PE_NULL_1, PE_NULL_2, PE_NULL_3, PE_NULL_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_change", model = "Null", prediction_error = PE_NULL_Sum)
-PE_NULL_Sum  # 4307.954
+PE_NULL_Sum  # 4334.452
 
 
 ###### DistToSummit FLs #####-----------------------------------
@@ -1112,7 +1112,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_change", model = "DistToSummit (exploratory)", prediction_error = PE_Sum)
-PE_Sum  #  4076.674
+PE_Sum  # 4072.674
 
 
 ###### Final model #####--------------------------------------------------------
@@ -1162,7 +1162,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_change", model = "Dist_SDF (final)", prediction_error = PE_Sum)
-PE_Sum  # 4158.87
+PE_Sum  # 4159.190
 
 
 ##### Ascending FLs #####-----------------------------------------------------
@@ -1183,7 +1183,7 @@ summary(k1_NULL)$coefficients[1]  #Intercept = 69.33929
 
 # which corresponds to an estimate of REG_alt given by
 REG_alt.Predict_NULL.1 <- summary(k1_NULL)$coefficients[1]
-REG_alt.Predict_NULL.1  #69.33929
+REG_alt.Predict_NULL.1
 
 #Calculate prediction error for xv2==1:
 PE_NULL_1 <- FL_Ascending_modeling_df$REG_alt[xv2 == 1] - REG_alt.Predict_NULL.1
@@ -1218,7 +1218,7 @@ PE_NULL_4
 #Calculate total prediction error:
 PE_NULL_Sum <- sum(abs(c(PE_NULL_1, PE_NULL_2, PE_NULL_3, PE_NULL_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_advance", model = "Null", prediction_error = PE_NULL_Sum)
-PE_NULL_Sum  # 2363.531
+PE_NULL_Sum  # 2321.951
 
 
 ###### Distance to summit Ascending FLs #####-----------------------------------
@@ -1268,7 +1268,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_advance", model = "DistToSummit (exploratory)", prediction_error = PE_Sum)
-PE_Sum  #  4076.674
+PE_Sum  # 2277.720
 
 
 ###### Final model #####--------------------------------------------------------
@@ -1318,7 +1318,7 @@ PE_4
 #Calculate total prediction error:
 PE_Sum <- sum(abs(c(PE_1, PE_2, PE_3, PE_4)))
 cv_results[[length(cv_results) + 1]] <- data.frame(response = "FL_advance", model = "Aspect_favour (final)", prediction_error = PE_Sum)
-PE_Sum  # 2264.917
+PE_Sum  # 2212.280
 
 
 
